@@ -15,6 +15,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login/>}/>
     </Routes>
   )
-}
+}  
 
 export default AppRoutes
+
