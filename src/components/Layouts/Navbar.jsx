@@ -19,13 +19,17 @@ const Navbar = () => {
           <Link to="/" className="hover:text-white transition">
             Home
           </Link>
-          <Link to="/" className="hover:text-white transition">
+          <Link to="/form" className="hover:text-white transition">
+            Form
+          </Link>
+          <Link to="/dashboard" className="hover:text-white transition">
             Dashboard
           </Link>
 
           <Link to="/" className="hover:text-white transition">
             <NotificationBell/>
           </Link>
+
           {/* <div className="flex items-center gap-6">
             <NotificationBell />
             <img
@@ -34,6 +38,7 @@ const Navbar = () => {
                 className="w-8 h-8 rounded-full"
             />
             </div> */}
+          
 
           <Link to="/login" 
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition">

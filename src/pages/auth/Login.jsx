@@ -11,6 +11,7 @@ const Login = () => {
     // const [email,setEmail]=useState("");
     // const [password,setPassword]=useState("");
     //usestate add later adfter ui desgin
+    
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1f1f1f] px-4">
         <div className="w-full max-w-sm bg-[#2a2e3b] rounded-xl shadow-xl p-8">
