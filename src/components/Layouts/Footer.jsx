@@ -16,9 +16,12 @@ const Footer = () => {
 
         {/* Links */}
         <div className="flex gap-6 text-sm text-gray-400">
-          <a href="/" className="hover:text-white transition">Home</a>
+          {/* <a href="/" className="hover:text-white transition">Home</a>
           <a href="/form" className="hover:text-white transition">Form</a>
-          <a href="/dashboard" className="hover:text-white transition">Dashboard</a>
+          <a href="/dashboard" className="hover:text-white transition">Dashboard</a> */}
+          <h1>Contact</h1>
+          <p></p>
+          <a href="https://www.flaticon.com/free-icons/phone-number" title="phone number icons">Phone Number</a>
         </div>
 
         {/* Copyright */}
