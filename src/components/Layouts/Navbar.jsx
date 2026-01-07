@@ -26,7 +26,7 @@ const Navbar = () => {
             Dashboard
           </Link>
 
-          <Link to="/" className="hover:text-white transition">
+          <Link className="hover:text-white transition">
             <NotificationBell/>
           </Link>
 

@@ -6,7 +6,7 @@ const Form = () => {
 
 
   return (
-    <div flag ='false' className="min-h-screen bg-[#1f1f1f] flex items-center justify-center p-4">
+    <div  className="min-h-screen bg-[#1f1f1f] flex items-center justify-center p-4">
         <div className="w-full max-w-xl bg-[#2a2e3b] rounded-xl shadow-md p-6">
             
             <h2 className="text-2xl font-semibold text-white mb-1">
@@ -134,6 +134,7 @@ const Form = () => {
                 Submit Complaint
             </button>
 
+            
             </form>
         </div>
 </div>
