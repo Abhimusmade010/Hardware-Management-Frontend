@@ -14,8 +14,8 @@ apiClient.interceptors.request.use((config) => {
   return config;
 }, (error) => Promise.reject(error));
 
-// export const signupUser = (formData) => apiClient.post('/user/signup', formData);
-// export const logUser =(formData)=>apiClient.post('/user/login',formData);
+export const signupUser = (formData) => apiClient.post('/user/signup', formData);
+export const logUser =(formData)=>apiClient.post('/user/login',formData);
 
 
 

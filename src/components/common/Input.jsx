@@ -1,19 +1,5 @@
 
-
-
-// function Input({ type, placeholder, value, onChange }) {
-//   return (
-//     <input
-//       type={type}
-//       placeholder={placeholder}
-//       value={value}
-//       onChange={onChange}
-//     />
-//   );
-// }
-
-// export default Input;
-function Input({ type = "text", className = "", ...props }) {
+function Input({ type = "", className = "", ...props }) {
   return (
     <input
       type={type}
