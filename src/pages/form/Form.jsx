@@ -1,10 +1,11 @@
+
 import React from "react";
 import Input from "../../components/common/Input";
 
 const Form = () => {
   return (
     <div className="min-h-screen bg-[#1f1f1f] flex items-center justify-center p-4">
-        
+
       <div className="w-full max-w-xl bg-[#2a2e3b] rounded-xl shadow-lg p-6">
         
         {/* Header */}
