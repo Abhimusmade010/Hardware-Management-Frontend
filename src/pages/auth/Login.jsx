@@ -1,42 +1,46 @@
 import React, { useState } from 'react'
-
 import { Link, useNavigate } from 'react-router-dom';
 import { logUser } from '../../api/auth'
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import { useAuth } from '../../context/AuthContext';
 
-//useState
+
+
 const Login = () => {
+
     const [error,setError]=useState("");
     const [loading,setLoading]=useState(false);
     const navigate=useNavigate();
+    // const {isAuthenticated } =useState();
+    // const {login} =useAuth();
+    const { login, isAuthenticated } = useAuth();
 
     const [loginData,setLoginData]=useState({
         Email:"",
         Password:""
     })
     const{Email,Password}=loginData;
-
     const handleChange=(e)=>{
-        const {name,value}=e.target;
-        setLoginData((prev)=>(
-        {
-            ...prev,
-            [name]:value
-        }
-    ));
-    console.log("CHANGE:", e.target.name, e.target.value);
-  };
+            const {name,value}=e.target;
+            setLoginData((prev)=>(
+            {
+                ...prev,
+                [name]:value
+            }
+        ));
+        console.log("CHANGE:", e.target.name, e.target.value);
+    };
     const handleSubmit=async (e)=>{
-
         console.log("handlesubmit entry happens here")
         e.preventDefault();
         setError("");
         setLoading(true);
-
         try{
             console.log("try block of handlesubmit entry happens here")
             const res=await logUser(loginData);
+            // localStorage.setItem("token",res.data.token);
+            login(res.data.token);                      // login global auth for auto update of the UI
             console.log("success!",res);
             alert("Login Successfully")                 //later replaced by good popup UI
             navigate('/');
@@ -49,17 +53,13 @@ const Login = () => {
             err.response?.data?.message ||
             "Login failed"
             );
-
         } 
         finally{
             console.log(" finally nblock of handlesubmit entry happens here");
             setLoading(false);
         }
-
         console.log("Form Data:",loginData);
-  
     }
-
     //usestate add later adfter ui desgin
     return (
     <div className="min-h-screen flex items-center justify-center bg-[#1f1f1f] px-4">
@@ -102,19 +102,26 @@ const Login = () => {
             />
             </form>
 
-            <p className="text-sm text-center text-gray-400 mt-6">
-                Didn't have account?{" "}
-                <Link
-                    to="/signup"
-                    className="text-blue-400 cursor-pointer hover:underline"
-                    >
-                    Create
-                </Link>
-            </p>
+            
+            {!isAuthenticated && (
+                <p className="text-sm text-center text-gray-400 mt-6">
+                    Didn't have account?{" "}
+                    <Link
+                        to="/signup"
+                        className="text-blue-400 cursor-pointer hover:underline"
+                        >
+                        Create
+                    </Link>
+                </p>
+            )}
 
         </div>
     </div>
   )
 }
+
+
+
+
 
 export default Login

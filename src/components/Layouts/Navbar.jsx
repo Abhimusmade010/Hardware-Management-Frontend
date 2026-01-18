@@ -1,12 +1,23 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import NotificationBell from "../notifications/NotificationBell";
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
 
+  const {isAuthenticated,logout}=useAuth();
+
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const handleLogout=()=>{
+    logout();
+    setIsOpen(false);
+
+  }
   return (
     <nav className="w-full bg-[#1f2230] border-b border-[#2f344a]">
+      
+      
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
         {/* Logo */}
@@ -19,37 +30,49 @@ const Navbar = () => {
           <Link to="/" className="hover:text-white transition">
             Home
           </Link>
-          <Link to="/form" className="hover:text-white transition">
-            Form
-          </Link>
-          <Link to="/dashboard" className="hover:text-white transition">
-            Dashboard
-          </Link>
 
-          <Link className="hover:text-white transition">
-            <NotificationBell/>
-          </Link>
+          {isAuthenticated &&(
+            <>
+              <Link to="/form" className="hover:text-white transition">
+                Form
+              </Link>
+              <Link to="/dashboard" className="hover:text-white transition">
+                Dashboard
+              </Link>
 
-          {/* <div className="flex items-center gap-6">
-            <NotificationBell />
-            <img
-                src="/avatar.png"
-                alt="profile"
-                className="w-8 h-8 rounded-full"
-            />
-            </div> */}
+              <Link className="hover:text-white transition">
+                <NotificationBell/>
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
+              >
+                Logout
+              </button>
+            </>
+              
+          )}
+
+          
+          {!isAuthenticated && (
+            <>
+              <Link to="/login" 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition">
+                Login
+              </Link>
+
+              <Link
+                to="/signup"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+
           
 
-          <Link to="/login" 
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition">
-            Login
-          </Link>
-          <Link
-            to="/signup"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
-          >
-            Sign Up
-          </Link>
         </div>
 
         {/* Mobile Hamburger */}
@@ -61,51 +84,52 @@ const Navbar = () => {
         </button>
       </div>
 
+      
       {/* Mobile Menu */}
-      {/* Mobile Menu */}
-{isOpen && (
-  <div className="md:hidden absolute right-6 top-16 w-48 bg-[#1f2230] border border-[#2f344a] rounded-lg shadow-lg py-3 z-50">
-    
-    <Link
-      to="/"
-      onClick={() => setIsOpen(false)}
-      className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
-    >
-      Home
-    </Link>
+      
+      {isOpen && (
+        <div className="md:hidden absolute right-6 top-16 w-48 bg-[#1f2230] border border-[#2f344a] rounded-lg shadow-lg py-3 z-50">
+          
+          <Link
+            to="/"
+            onClick={() => setIsOpen(false)}
+            className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
+          >
+            Home
+          </Link>
 
-    <Link
-      to="/"
-      onClick={() => setIsOpen(false)}
-      className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
-    >
-      Dashboard
-    </Link>
+          <Link
+            to="/"
+            onClick={() => setIsOpen(false)}
+            className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
+          >
+            Dashboard
+          </Link>
 
-    <Link
-      to="/"
-      onClick={() => setIsOpen(false)}
-      className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
-    >
-      Notifications
-    </Link>
-    <Link
-      to="/login"
-      onClick={() => setIsOpen(false)}
-      className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md mx-2 mt-1 text-center"
-    >
-      Login
-    </Link>
+          <Link
+            to="/"
+            onClick={() => setIsOpen(false)}
+            className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
+          >
+            Notifications
+          </Link>
+          <Link
+            to="/login"
+            onClick={() => setIsOpen(false)}
+            className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md mx-2 mt-1 text-center"
+          >
+            Login
+          </Link>
 
-    <Link
-      to="/signup"
-      onClick={() => setIsOpen(false)}
-      className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md mx-2 mt-1 text-center"
-    >
-      Sign Up
-    </Link>
-  </div>
-)}
+          <Link
+            to="/signup"
+            onClick={() => setIsOpen(false)}
+            className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md mx-2 mt-1 text-center"
+          >
+            Sign Up
+          </Link>
+        </div>
+      )}
 
     </nav>
   );
