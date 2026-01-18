@@ -1,145 +1,131 @@
-import React from 'react'
+
+import React from "react";
+import Input from "../../components/common/Input";
 
 const Form = () => {
-
-
-
-
   return (
-    <div  className="min-h-screen bg-[#1f1f1f] flex items-center justify-center p-4">
-        <div className="w-full max-w-xl bg-[#2a2e3b] rounded-xl shadow-md p-6">
-            
-            <h2 className="text-2xl font-semibold text-white mb-1">
-            Submit a Complaint
-            </h2>
-            <p className="text-sm text-gray-500 mb-6">
-            Please provide accurate details so the issue can be resolved quickly.
-            </p>
+    <div className="min-h-screen bg-[#1f1f1f] flex items-center justify-center p-4">
 
-            <form className="space-y-4">
+      <div className="w-full max-w-xl bg-[#2a2e3b] rounded-xl shadow-lg p-6">
+        
+        {/* Header */}
+        <h2 className="text-2xl font-semibold text-white">
+          Submit a Complaint
+        </h2>
 
-            {/* Department */}
-            <div>
-            <label className="block text-sm font-medium text-white mb-1">
-                Department
+        <p className="text-sm text-gray-400 mb-6">
+          Please provide accurate details so the issue can be resolved quickly.
+        </p>
+
+        <form className="space-y-5">
+
+          {/* Asset ID */}
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-1">
+              Asset ID
+            </label>
+            <Input
+              type="text"
+              name="asset_id"
+              placeholder="Enter asset ID"
+              className="w-full rounded-md px-3 py-2 bg-[#1f2937] text-white
+                         border border-slate-600 focus:outline-none
+                         focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-1">
+              Complaint Category
+            </label>
+            <select
+              className="w-full rounded-md px-3 py-2 bg-[#1f2937] text-white
+                         border border-slate-600 focus:outline-none
+                         focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">Select category</option>
+              <option>Hardware</option>
+              <option>Network</option>
+              <option>Software</option>
+            </select>
+          </div>
+
+          {/* Nature of Complaint */}
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-1">
+              Nature of Complaint
+            </label>
+            <textarea
+              rows="4"
+              placeholder="Describe the issue..."
+              className="w-full rounded-md px-3 py-2 bg-[#1f2937] text-white
+                         border border-slate-600 focus:outline-none
+                         focus:ring-2 focus:ring-indigo-500 resize-none"
+            />
+          </div>
+
+          {/* Priority */}
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-2">
+              Priority
+            </label>
+            <div className="flex gap-6 text-gray-300">
+              {["Low", "Medium", "High"].map((level) => (
+                <label
+                  key={level}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="priority"
+                    className="accent-indigo-500"
+                  />
+                  {level}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-1">
+              Upload Image (Max 1MB) <span className="text-red-500">*</span>
             </label>
 
-            <select
-                className="
-                w-full
-                rounded-md
-                px-3
-                py-2
-                bg-[#1f2937]        /* dark background */
-                text-white          /* visible text */
-                border border-gray-600
-                focus:outline-none
-                focus:ring-2
-                focus:ring-amber-500
-                "
+            <label
+              htmlFor="imageUpload"
+              className="w-full h-12 px-3 flex items-center rounded-md
+                         bg-[#1f2937] text-gray-400 cursor-pointer
+                         border border-slate-600 hover:border-indigo-500
+                         transition"
             >
-                <option value="" className="text-gray-400">
-                Select department
-                </option>
-                <option value="IT">IT</option>
-                <option value="Computer">Computer</option>
-                <option value="AIDS">AIDS</option>
-                <option value="ECE">ECE</option>
-                <option value="BSE">BSE</option>
-                <option value="ENTC">ENTC</option>
-            </select>
-            </div>
+              Click to upload image (PNG, JPG up to 1MB)
+              <input
+                id="imageUpload"
+                type="file"
+                accept="image/png, image/jpeg"
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 hover:bg-indigo-700
+                       text-white py-2.5 rounded-md font-medium transition"
+          >
+            Submit Complaint
+          </button>
+
+        </form>
 
 
-            {/* Category */}
-            <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                Complaint Category
-                </label>
-                <select className="
-                w-full
-                rounded-md
-                px-3
-                py-2
-                bg-[#1f2937]        /* dark background */
-                text-white          /* visible text */
-                border border-gray-600
-                focus:outline-none
-                focus:ring-2
-                focus:ring-amber-500
-                "
-                >
-                <option>Select category</option>
-                <option>Hardware</option>
-                <option>Network</option>
-                <option>Software</option>
-                </select>
-            </div>
+      </div>
 
-            {/* Nature */}
-            <div>
-                <label className="block text-sm font-medium text-white mb-1  ">
-                Nature of Complaint
-                </label>
-                <textarea
-                rows="4"
-                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                placeholder="Describe the issue..."
-                />
-            </div>
+    </div>
+  );
+};
 
-            {/* Room */}
-            <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                Room / Location
-                </label>
-                <input
-                type="text"
-                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                placeholder="e.g. Lab 203"
-                />
-            </div>
-
-            {/* Priority */}
-            <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                Priority
-                </label>
-                <div className="flex gap-4">
-                <label className="flex items-center gap-1">
-                    <input type="radio" name="priority" /> Low
-                </label>
-                <label className="flex items-center gap-1">
-                    <input type="radio" name="priority" /> Medium
-                </label>
-                <label className="flex items-center gap-1">
-                    <input type="radio" name="priority" /> High
-                </label>
-                </div>
-            </div>
-
-            {/* Attachment */}
-            {/* <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                Attachment (optional)
-                </label>
-                <input type="file" />
-            </div> */}
-
-            {/* Submit */}
-            <button
-                type="submit"
-                className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition"
-            >
-                Submit Complaint
-            </button>
-
-            
-            </form>
-        </div>
-</div>
-
-  )
-}
-
-export default Form
+export default Form;
