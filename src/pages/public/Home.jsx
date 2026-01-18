@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-// import Navbar from "../../components/Layouts/Navbar";
+
+import { useAuth } from "../../context/AuthContext";
 
 const Home = () => {
-
+  const { isAuthenticated } = useAuth();
 
 
   return (
@@ -24,13 +25,31 @@ const Home = () => {
           </p>
 
           <div className="mt-6 flex gap-4">
-            <Link
-              to="/signup"
+            {!isAuthenticated && (
+              <Link
+              to="/login"
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition"
-            >
-              Get Started
-            </Link>
+              >
+                Get Started
+              </Link>
+            )}
+            
           </div>
+
+          {/* later add the route for get started after login  */}
+          <div className="mt-6 flex gap-4">
+            {isAuthenticated && (
+              <Link
+              to="/"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition"
+              >
+                Get Started
+              </Link>
+            )}
+            
+          </div>
+
+
         </div>
 
         {/* Illustration Placeholder */}
