@@ -6,7 +6,6 @@ import Button from '../../components/common/Button';
 import { useAuth } from '../../context/AuthContext';
 
 
-
 const Login = () => {
 
     const [error,setError]=useState("");
@@ -103,7 +102,7 @@ const Login = () => {
             </form>
 
             
-            {!isAuthenticated && (
+            {isAuthenticated && (
                 <p className="text-sm text-center text-gray-400 mt-6">
                     Didn't have account?{" "}
                     <Link
@@ -119,9 +118,5 @@ const Login = () => {
     </div>
   )
 }
-
-
-
-
 
 export default Login

@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import NotificationBell from "../notifications/NotificationBell";
 import { useAuth } from "../../context/AuthContext";
 
+
+
 const Navbar = () => {
 
   const {isAuthenticated,logout}=useAuth();
@@ -12,7 +14,6 @@ const Navbar = () => {
   const handleLogout=()=>{
     logout();
     setIsOpen(false);
-
   }
   return (
     <nav className="w-full bg-[#1f2230] border-b border-[#2f344a]">
@@ -26,6 +27,7 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Links */}
+
         <div className="hidden md:flex items-center gap-6 text-gray-300">
           <Link to="/" className="hover:text-white transition">
             Home
@@ -49,6 +51,15 @@ const Navbar = () => {
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
               >
                 Logout
+              </button> 
+
+              {/* {/* //profile */}
+
+              <button className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-gray-800 transition">
+                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                  <span className="text-white font-medium text-sm">A</span>
+                </div>
+
               </button>
             </>
               
