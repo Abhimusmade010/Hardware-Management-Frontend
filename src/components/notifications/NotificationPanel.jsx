@@ -1,27 +1,7 @@
 import NotificationItem from "./NotificationItem";
 
 const notifications = [
-  {
-    id: 1,
-    type: "success",
-    title: "Complaint Resolved",
-    message: "Your WiFi issue has been resolved by admin.",
-    time: "2 hours ago",
-  },
-  {
-    id: 2,
-    type: "info",
-    title: "Status Updated",
-    message: "Your complaint status changed to In Progress.",
-    time: "1 day ago",
-  },
-  {
-    id: 3,
-    type: "warning",
-    title: "Admin Comment",
-    message: "Admin added a note to your complaint.",
-    time: "3 days ago",
-  },
+  
 ];
 
 const NotificationPanel = () => {

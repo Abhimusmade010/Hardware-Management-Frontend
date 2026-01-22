@@ -39,9 +39,9 @@ const Login = () => {
             console.log("try block of handlesubmit entry happens here")
             const res=await logUser(loginData);
             // localStorage.setItem("token",res.data.token);
-            login(res.data.token);                      // login global auth for auto update of the UI
+            login(res.data.token);                          //login global auth for auto update of the UI
             console.log("success!",res);
-            alert("Login Successfully")                 //later replaced by good popup UI
+            alert("Login Successfully")                     //later replaced by good popup UI
             navigate('/');
         }
         catch(err){
@@ -102,7 +102,7 @@ const Login = () => {
             </form>
 
             
-            {isAuthenticated && (
+            {!isAuthenticated && (
                 <p className="text-sm text-center text-gray-400 mt-6">
                     Didn't have account?{" "}
                     <Link

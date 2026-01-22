@@ -20,3 +20,6 @@ export const logUser =(formData)=>apiClient.post('/user/login',formData);
 
 export const submitComplaint=(formData)=>apiClient.post('user/raisedComplaint',formData);
 
+export const complaintStatistics = () => {
+  return apiClient.get("user/stats");
+};
