@@ -109,36 +109,70 @@ const Navbar = () => {
             Home
           </Link>
 
-          <Link
-            to="/"
-            onClick={() => setIsOpen(false)}
-            className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
-          >
-            Dashboard
-          </Link>
+          {isAuthenticated && (
+            <>
+              <Link
+                  to="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
+                >
+                  Dashboard
+                </Link>
 
-          <Link
-            to="/"
-            onClick={() => setIsOpen(false)}
-            className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
-          >
-            Notifications
-          </Link>
-          <Link
-            to="/login"
-            onClick={() => setIsOpen(false)}
-            className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md mx-2 mt-1 text-center"
-          >
-            Login
-          </Link>
+                <Link
+                  to="/"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
+                >
+                  Notifications
+                </Link>
 
-          <Link
-            to="/signup"
-            onClick={() => setIsOpen(false)}
-            className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md mx-2 mt-1 text-center"
-          >
-            Sign Up
-          </Link>
+                <Link
+                  to="/form"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
+                >
+                  Form
+                </Link>
+
+                {/* <button
+                  onClick={handleLogout}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
+                >
+                  Logout
+                </button>  */}
+                <Link
+                  to="/"
+                  onClick={handleLogout}
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
+                >
+
+                  Logout
+                </Link>
+
+            </>
+          )}
+
+          {!isAuthenticated && (
+            <>
+              <Link
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md mx-2 mt-1 text-center"
+              >
+                Login
+              </Link>
+
+              <Link
+                to="/signup"
+                onClick={() => setIsOpen(false)}
+                className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md mx-2 mt-1 text-center"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+          
         </div>
       )}
 
