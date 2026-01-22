@@ -6,7 +6,6 @@ import Button from '../../components/common/Button';
 import { useAuth } from '../../context/AuthContext';
 
 
-
 const Login = () => {
 
     const [error,setError]=useState("");
@@ -40,9 +39,9 @@ const Login = () => {
             console.log("try block of handlesubmit entry happens here")
             const res=await logUser(loginData);
             // localStorage.setItem("token",res.data.token);
-            login(res.data.token);                      // login global auth for auto update of the UI
+            login(res.data.token);                          //login global auth for auto update of the UI
             console.log("success!",res);
-            alert("Login Successfully")                 //later replaced by good popup UI
+            alert("Login Successfully")                     //later replaced by good popup UI
             navigate('/');
         }
         catch(err){
@@ -119,9 +118,5 @@ const Login = () => {
     </div>
   )
 }
-
-
-
-
 
 export default Login
