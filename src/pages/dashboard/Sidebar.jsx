@@ -1,79 +1,48 @@
+import { NavLink } from "react-router-dom";
+
 const Sidebar = () => {
+  const linkClass = ({ isActive }) =>
+    `block px-4 py-2 rounded-lg transition
+     ${isActive
+       ? "bg-[#1e293b] text-white"
+       : "text-gray-300 hover:bg-[#1e293b] hover:text-white"}`;
+
   return (
+
     <aside className="w-64 bg-[#020617] border-r border-[#1e293b] min-h-screen p-5">
-     
-
-      {/* <nav className="space-y-2">
-        {[
-          "Dashboard",
-          "All Complaints",
-          "Pending",
-          "Resolved",
-          "Analytics",
-          "Settings",
-        ].map((item) => (
-          <button
-            key={item}
-            className="w-full text-left px-4 py-2 rounded-lg
-              text-gray-300 hover:bg-[#1e293b] hover:text-white
-              transition"
-          >
-            {item}
-          </button>
-        ))}
-      </nav> */}
       
-      <nav>
-        <div 
-        className="w-full text-left px-4 py-2 rounded-lg
-              text-gray-300 hover:bg-[#1e293b] hover:text-white
-              transition"
-        >
+
+
+      <nav className="space-y-2">
+        <NavLink to="/dashboard" end className={linkClass}>
           Dashboard
-        </div>
-
-        <div
-          className="w-full text-left px-4 py-2 rounded-lg
-              text-gray-300 hover:bg-[#1e293b] hover:text-white
-              transition"
-        >
+        </NavLink>
+        {/* <NavLink to="/dashboard/complaint" end className={linkClass}>
           All Complaints
-        </div>
-
-        <div
-          className="w-full text-left px-4 py-2 rounded-lg
-              text-gray-300 hover:bg-[#1e293b] hover:text-white
-              transition"
-        >
+        </NavLink> */}
+        <NavLink to="/dashboard/pending" end className={linkClass}>
           Pending
-        </div>
+        </NavLink>
+        <NavLink to="/dashboard/resolved" end className={linkClass}>
+          Resolved
+        </NavLink>
 
-        <div
-          className="w-full text-left px-4 py-2 rounded-lg
-              text-gray-300 hover:bg-[#1e293b] hover:text-white
-              transition"
-        >
-         Resolved
-        </div>
-
-        <div
-          className="w-full text-left px-4 py-2 rounded-lg
-              text-gray-300 hover:bg-[#1e293b] hover:text-white
-              transition"
-        >
+        <NavLink to="/dashboard/analytics" end className={linkClass}>
           Analytics(Optional)
-        </div>
+        </NavLink>
 
-        <div
-          className="w-full text-left px-4 py-2 rounded-lg
-              text-gray-300 hover:bg-[#1e293b] hover:text-white
-              transition"
-        >
+        <NavLink to="/dashboard/settings" end className={linkClass}>
           Settings
-        </div>
+        </NavLink>
+
+
       </nav>
     </aside>
   );
 };
 
 export default Sidebar;
+
+
+
+

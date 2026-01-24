@@ -3,11 +3,11 @@
 const ComplaintsTable = () => {
 
   const generateID=()=>{
-    let cnt=0;
-    cnt++;
-    return cnt;
+    
   }
+  
   return (
+
     <div className="bg-[#020617] border border-[#1e293b] rounded-xl overflow-hidden">
       <table className="w-full text-sm text-gray-300">
         {/* TABLE HEADER */}
@@ -17,7 +17,7 @@ const ComplaintsTable = () => {
             <th className="px-4 py-3 text-left font-medium">Status</th>
             <th className="px-4 py-3 text-left font-medium">Category</th>
             <th className="px-4 py-3 text-left font-medium">Priority</th>
-            <th className="px-4 py-3 text-left font-medium">Add Note</th>
+            {/* <th className="px-4 py-3 text-left font-medium">Add Note</th> */}
             <th className="px-4 py-3 text-left font-medium">AssetID</th>
             <th className="px-4 py-3 text-left font-medium">Details</th>
           </tr>
@@ -26,7 +26,7 @@ const ComplaintsTable = () => {
         {/* TABLE BODY */}
         <tbody>
           <tr className="border-b border-[#1e293b] hover:bg-[#0f172a] transition">
-            <td className="px-4 py-3 font-medium">generateID()</td>
+            <td className="px-4 py-3 font-medium"></td>
 
             <td className="px-4 py-3">
               <span className="text-yellow-400">Pending</span>

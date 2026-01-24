@@ -49,9 +49,16 @@ const Form = () => {
         const res=await submitComplaint(submitFormData);
         console.log("success!",res);
         alert("Complaint Submitted Successfully!!");
-        // navigate('/');                                         later add ui pop that compaint register and give button to see the sepecific detials about the coplaint and status tracking room
-        
+        setsubmitFormData({
+          assetId: "",
+          category: "",
+          description: "",
+          priority: "",
+        });
+        // navigate('/');                                        
+        //  later add ui pop that compaint register and give button to see the sepecific detials about the coplaint and status tracking room
       }
+      
       catch(err){
         // setError(err.message);
         setError(
@@ -67,9 +74,6 @@ const Form = () => {
       console.log("Form Data:",submitFormData);
   
     }
-
-
-
 
 
   return (

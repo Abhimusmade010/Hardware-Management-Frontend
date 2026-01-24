@@ -9,7 +9,13 @@ import Home from "../pages/public/Home"
 // import Dashboard from "../pages/dashboard/Main/StatCards"
 import Dashboard from "../pages/dashboard/Dashbaord"
 // import Footer from "../components/Layouts/Footer"
-
+// const {isAuthenticated } = useAuth();
+import DashboardLayout from "../pages/dashboard/DashboardLayout"
+import Pending from "../pages/dashboard/Pending"
+import Resolved from "../pages/dashboard/Main/Resolved"
+import Analytics from "../pages/dashboard/Main/Analytics"
+import Settings from "../pages/dashboard/Main/Settings"
+import Profile from "../pages/profile/Profile"
 const AppRoutes = () => {
   return (
     <Routes>
@@ -18,10 +24,16 @@ const AppRoutes = () => {
         <Route path="/login" element={<PublicLayout ><Login/></PublicLayout>}/>
         <Route path="/dashboard" element={<PublicLayout ><Dashboard/></PublicLayout>}/>
         <Route  path="/form" element={<PublicLayout flag='false' ><Form/></PublicLayout>}/>
+        
 
-        {/* <Route path="/" element */}
-        {/* <Footer/> */}
-        {/* <Route path/> */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="pending" element={<Pending />} />
+          <Route path="resolved" element={<Resolved />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+        <Route path="/profile" element={<Profile/>}/>
     </Routes>
   )
 }  

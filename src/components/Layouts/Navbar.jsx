@@ -3,17 +3,22 @@ import { Link } from "react-router-dom";
 import NotificationBell from "../notifications/NotificationBell";
 import { useAuth } from "../../context/AuthContext";
 
-
+import { useNavigate } from "react-router-dom";
+import ProfilePopup from "../../pages/dashboard/Main/ProfilePopup";
 
 const Navbar = () => {
 
+  const [showPopup, setShowPopup] = useState(false);
   const {isAuthenticated,logout}=useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
-  
+  const navigate=useNavigate();
+
   const handleLogout=()=>{
     logout();
     setIsOpen(false);
+    navigate("/login");
+
   }
   return (
     <nav className="w-full bg-[#1f2230] border-b border-[#2f344a]">
@@ -46,21 +51,29 @@ const Navbar = () => {
                 <NotificationBell/>
               </Link>
 
-              <button
+              {/* <button
                 onClick={handleLogout}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
               >
                 Logout
-              </button> 
+              </button>  */}
+
 
               {/* {/* //profile */}
 
-              <button className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-gray-800 transition">
-                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-                  <span className="text-white font-medium text-sm">A</span>
-                </div>
-
-              </button>
+              <div
+                onClick={() => setShowPopup(prev => !prev)}
+                className="w-8 h-8 rounded-full bg-blue-600 
+                          cursor-pointer flex items-center justify-center"
+              >
+                A
+              </div>
+              {showPopup && (
+                <ProfilePopup
+                  onClose={() => setShowPopup(false)}
+                  onLogout={handleLogout}
+                />
+              )}
             </>
               
           )}
