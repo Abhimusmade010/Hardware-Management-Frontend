@@ -1,5 +1,6 @@
 const Profile = () => {
   // later you can fetch this from context / API
+  
   const user = {
     name: "Abhishek Musmade",
     email: "abhishek@gmail.com",
@@ -7,6 +8,7 @@ const Profile = () => {
     department: "IT Department",
   };
 
+  
   return (
 
     <div className="min-h-screen bg-[#0f172a] p-8">
@@ -18,7 +20,7 @@ const Profile = () => {
       {/* Profile Card */}
       <div
         className="max-w-4xl mx-auto
-        bg-gradient-to-br from-[#020617] to-[#020617]/90
+        bg-linear-to-br from-[#020617] to-[#020617]/90
         border border-[#1e293b]
         rounded-2xl shadow-xl p-8"
       >
@@ -84,7 +86,7 @@ const Profile = () => {
         </div>
       </div>
     </div>
-    
+
   );
 };
 

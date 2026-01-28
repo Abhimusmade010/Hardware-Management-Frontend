@@ -23,3 +23,7 @@ export const submitComplaint=(formData)=>apiClient.post('user/raisedComplaint',f
 export const complaintStatistics = () => {
   return apiClient.get("user/stats");
 };
+
+export const allComplaints=()=>{
+  return apiClient.get("user/complaints");
+};
