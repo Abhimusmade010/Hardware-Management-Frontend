@@ -1,6 +1,4 @@
 
-
-
 // function Button({ text }) {
 //   return <button>{text}</button>;
 // }
@@ -18,3 +16,4 @@ function Button({ text, className, ...props }) {
 }
 
 export default Button;
+

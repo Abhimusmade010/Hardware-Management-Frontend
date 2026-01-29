@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
 import { allComplaints } from "../../../api/auth";
 import { useNavigate } from "react-router-dom";
-
+import ComplaintModal from "../../Details/ComplaintModal";
 
 const ComplaintsTable = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]); // ✅ array
   const navigate = useNavigate();
+
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openModal = (complaint) => {
+    setSelectedComplaint(complaint);
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+    setSelectedComplaint(null);
+  };
 
   useEffect(() => {
     
@@ -27,21 +40,22 @@ const ComplaintsTable = () => {
     fetchComplaints();              // ✅ MUST CALL
   }, []);                           // ✅ dependency array
 
-  // if (loading) {
-  //   return (
-  //     <div className="text-center py-6 text-gray-400">
-  //       Loading complaints...
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div className="text-center py-6 text-gray-400">
+        Loading complaints...
+      </div>
+    );
+  }
 
-  // if (error) {
-  //   return (
-  //     <div className="text-center py-6 text-red-400">
-  //       {error}
-  //     </div>
-  //   );
-  // }
+  if (error) {
+    return (
+      <div className="text-center py-6 text-red-400">
+        {error}
+      </div>
+    );
+  }
+  
 
   return (
     <div className="bg-[#020617] border border-[#1e293b] rounded-xl overflow-hidden">
@@ -55,6 +69,8 @@ const ComplaintsTable = () => {
             <th className="px-4 py-3 text-left font-medium">Priority</th>
             <th className="px-4 py-3 text-left font-medium">AssetID</th>
             <th className="px-4 py-3 text-left font-medium">Details</th>
+            {/* <th className="px-4 py-3 text-left font-medium">Image</th>
+            <th className="px-4 py-3 text-left font-medium">Marked</th> */}
           </tr>
         </thead>
 
@@ -95,26 +111,26 @@ const ComplaintsTable = () => {
 
               <td className="px-4 py-3">
                 <button
-                  className="text-blue-500 hover:underline"
-                  onClick={() => alert(`Priority: ${c.priority}`)}
+                  className="text-blue-500 "
+                  
                 >
-                  View
+                  {c.priority}
+                </button>
+              </td>
+
+              <td className="px-4 py-3">
+                <button
+                  className="text-amber-500"
+                 
+                >
+                  {c.assetId}
                 </button>
               </td>
 
               <td className="px-4 py-3">
                 <button
                   className="text-amber-500 hover:underline"
-                  onClick={() => alert(`Asset ID: ${c.assetId}`)}
-                >
-                  Details
-                </button>
-              </td>
-
-              <td className="px-4 py-3">
-                <button
-                  className="text-amber-500 hover:underline"
-                  onClick={() => alert(`Description: ${c.description}`)}
+                  onClick={() => openModal(c)}
                 >
                   View
                 </button>
@@ -123,6 +139,14 @@ const ComplaintsTable = () => {
           ))}
         </tbody>
       </table>
+
+      {isOpen && (
+        <ComplaintModal
+          complaint={selectedComplaint}
+          onClose={closeModal}
+        />
+      )}
+
     </div>
   );
 };

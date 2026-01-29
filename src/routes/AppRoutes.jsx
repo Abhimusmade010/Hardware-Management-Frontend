@@ -16,6 +16,7 @@ import Resolved from "../pages/dashboard/Main/Resolved"
 import Analytics from "../pages/dashboard/Main/Analytics"
 import Settings from "../pages/dashboard/Main/Settings"
 import Profile from "../pages/profile/Profile"
+// import ComplaintModal from "../pages/Details/ComplaintModal"
 const AppRoutes = () => {
   return (
     <Routes>
@@ -34,6 +35,7 @@ const AppRoutes = () => {
           <Route path="settings" element={<Settings />} />
         </Route>
         <Route path="/profile" element={<Profile/>}/>
+        {/* <Route path="/ComplaintModal" element={<ComplaintModal/>}/> */}
     </Routes>
   )
 }  

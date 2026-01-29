@@ -40,7 +40,7 @@ const Home = () => {
           <div className="mt-6 flex gap-4">
             {isAuthenticated && (
               <Link
-              to="/"
+              to="/form"
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition"
               >
                 Get Started
