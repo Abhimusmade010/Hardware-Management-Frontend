@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 import { useAuth } from "../../context/AuthContext";
+import ROUTES from "../../routes/routePaths";
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
@@ -27,7 +28,7 @@ const Home = () => {
           <div className="mt-6 flex gap-4">
             {!isAuthenticated && (
               <Link
-              to="/login"
+              to={ROUTES.USER.LOGIN}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition"
               >
                 Get Started
@@ -40,7 +41,7 @@ const Home = () => {
           <div className="mt-6 flex gap-4">
             {isAuthenticated && (
               <Link
-              to="/form"
+              to={ROUTES.USER.FORM}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition"
               >
                 Get Started

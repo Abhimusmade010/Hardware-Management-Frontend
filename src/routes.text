@@ -1,0 +1,20 @@
+Routes
+1.User
+user/home
+user/login
+user/signUp
+user/submit 
+user/dashboard
+user/form
+user/dashboard/pending
+
+user/dashboard/resolved
+user/dashboard/analytics
+user/dashboard/settings
+
+
+Maintenance Routes:
+maintenance/login
+maintenance/dashboard
+
+

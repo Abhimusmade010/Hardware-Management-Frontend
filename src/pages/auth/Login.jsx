@@ -4,6 +4,7 @@ import { logUser } from '../../api/auth'
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { useAuth } from '../../context/AuthContext';
+import ROUTES from '../../routes/routePaths';
 
 
 const Login = () => {
@@ -42,7 +43,7 @@ const Login = () => {
             login(res.data.token);                          //login global auth for auto update of the UI
             console.log("success!",res);
             alert("Login Successfully")                     //later replaced by good popup UI
-            navigate('/');
+            navigate(ROUTES.USER.HOME);
         }
         catch(err){
             // setError(err.message);
@@ -106,7 +107,7 @@ const Login = () => {
                 <p className="text-sm text-center text-gray-400 mt-6">
                     Didn't have account?{" "}
                     <Link
-                        to="/signup"
+                        to={ROUTES.USER.SIGNUP}
                         className="text-blue-400 cursor-pointer hover:underline"
                         >
                         Create

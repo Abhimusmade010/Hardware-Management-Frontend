@@ -15,7 +15,7 @@ apiClient.interceptors.request.use((config) => {
 }, (error) => Promise.reject(error));
 
 export const signupUser = (formData) => apiClient.post('/user/signup', formData);
-export const logUser =(formData)=>apiClient.post('/user/login',formData);
+export const logUser =(formData)=>apiClient.post('user/login',formData);
 
 
 export const submitComplaint=(formData)=>apiClient.post('user/raisedComplaint',formData);

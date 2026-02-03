@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
+import ROUTES from "../../../routes/routePaths";
 const ProfilePopup = ({  onClose }) => {
   const popupRef = useRef(null);
 
@@ -12,12 +12,12 @@ const ProfilePopup = ({  onClose }) => {
     logout();
     onClose();
     // setIsOpen(false);
-    navigate("/login", { replace: true });
+    navigate(ROUTES.USER.LOGIN);
     alert("Logout Successfully!!");
 
   }
   const handlOnClick=()=>{
-    navigate("/profile") 
+    navigate(ROUTES.USER.PROFILE) 
 
   }
   // close when clicking outside
@@ -54,6 +54,8 @@ const ProfilePopup = ({  onClose }) => {
         Profile
       </button>
 
+
+      {/* //yet to addd the settings */}
       <button
         className="w-full text-left px-4 py-2 text-gray-300
                    hover:bg-[#1e293b] hover:text-white transition"

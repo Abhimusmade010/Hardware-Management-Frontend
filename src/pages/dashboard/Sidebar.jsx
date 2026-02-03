@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-
+import ROUTES from "../../routes/routePaths";
 const Sidebar = () => {
   const linkClass = ({ isActive }) =>
     `block px-4 py-2 rounded-lg transition
@@ -14,24 +14,25 @@ const Sidebar = () => {
 
 
       <nav className="space-y-2">
-        <NavLink to="/dashboard" end className={linkClass}>
+        <NavLink to={ROUTES.USER.DASHBOARD} end className={linkClass}>
           Dashboard
         </NavLink>
         {/* <NavLink to="/dashboard/complaint" end className={linkClass}>
           All Complaints
         </NavLink> */}
-        <NavLink to="/dashboard/pending" end className={linkClass}>
+        
+        <NavLink to={ROUTES.USER.DASHBOARD_PENDING} end className={linkClass}>
           Pending
         </NavLink>
-        <NavLink to="/dashboard/resolved" end className={linkClass}>
+        <NavLink to={ROUTES.USER.DASHBOARD_RESOLVED} end className={linkClass}>
           Resolved
         </NavLink>
 
-        <NavLink to="/dashboard/analytics" end className={linkClass}>
+        <NavLink to={ROUTES.USER.DASHBOARD_ANALYTICS} end className={linkClass}>
           Analytics(Optional)
         </NavLink>
 
-        <NavLink to="/dashboard/settings" end className={linkClass}>
+        <NavLink to={ROUTES.USER.DASHBOARD_SETTINGS} end className={linkClass}>
           Settings
         </NavLink>
 

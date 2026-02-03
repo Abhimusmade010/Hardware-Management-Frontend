@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Route } from "react-router-dom";
 import NotificationBell from "../notifications/NotificationBell";
 import { useAuth } from "../../context/AuthContext";
-
+import ROUTES from "../../routes/routePaths";
 import { useNavigate } from "react-router-dom";
 import ProfilePopup from "../../pages/dashboard/Main/ProfilePopup";
 
@@ -17,7 +17,7 @@ const Navbar = () => {
   const handleLogout=()=>{
     logout();
     setIsOpen(false);
-    navigate("/login");
+    navigate(ROUTES.USER.LOGIN);
 
   }
   return (
@@ -27,23 +27,24 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
         {/* Logo */}
-        <Link to="/" className="text-xl font-bold text-white">
+        <Link to={ROUTES.USER.HOME} className="text-xl font-bold text-white">
           Hardware<span className="text-blue-500">Manager</span>
         </Link>
 
         {/* Desktop Links */}
 
         <div className="hidden md:flex items-center gap-6 text-gray-300">
-          <Link to="/" className="hover:text-white transition">
+          <Link to={ROUTES.USER.HOME}
+          className="hover:text-white transition">
             Home
           </Link>
 
           {isAuthenticated &&(
             <>
-              <Link to="/form" className="hover:text-white transition">
+              <Link to={ROUTES.USER.FORM} className="hover:text-white transition">
                 Form
               </Link>
-              <Link to="/dashboard" className="hover:text-white transition">
+              <Link to={ROUTES.USER.DASHBOARD} className="hover:text-white transition">
                 Dashboard
               </Link>
 
@@ -81,13 +82,13 @@ const Navbar = () => {
           
           {!isAuthenticated && (
             <>
-              <Link to="/login" 
+              <Link to={ROUTES.USER.LOGIN} 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition">
                 Login
               </Link>
 
               <Link
-                to="/signup"
+                to={ROUTES.USER.SIGNUP}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
               >
                 Sign Up
@@ -115,7 +116,7 @@ const Navbar = () => {
         <div className="md:hidden absolute right-6 top-16 w-48 bg-[#1f2230] border border-[#2f344a] rounded-lg shadow-lg py-3 z-50">
           
           <Link
-            to="/"
+            to={ROUTES.USER.HOME}
             onClick={() => setIsOpen(false)}
             className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
           >
@@ -125,7 +126,7 @@ const Navbar = () => {
           {isAuthenticated && (
             <>
               <Link
-                  to="/dashboard"
+                  to={ROUTES.USER.DASHBOARD}
                   onClick={() => setIsOpen(false)}
                   className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
                 >
@@ -133,7 +134,7 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  to="/"
+                  to={ROUTES.USER.HOME}
                   onClick={() => setIsOpen(false)}
                   className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
                 >
@@ -141,7 +142,7 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  to="/form"
+                  to={ROUTES.USER.HOME}
                   onClick={() => setIsOpen(false)}
                   className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
                 >
@@ -155,7 +156,7 @@ const Navbar = () => {
                   Logout
                 </button>  */}
                 <Link
-                  to="/"
+                  // to="/"
                   onClick={handleLogout}
                   className="block px-4 py-2 text-gray-300 hover:bg-[#2a2e3b] hover:text-white"
                 >
@@ -169,7 +170,7 @@ const Navbar = () => {
           {!isAuthenticated && (
             <>
               <Link
-                to="/login"
+                to={ROUTES.USER.LOGIN}
                 onClick={() => setIsOpen(false)}
                 className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md mx-2 mt-1 text-center"
               >
@@ -177,7 +178,7 @@ const Navbar = () => {
               </Link>
 
               <Link
-                to="/signup"
+                to={ROUTES.USER.SIGNUP}
                 onClick={() => setIsOpen(false)}
                 className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md mx-2 mt-1 text-center"
               >

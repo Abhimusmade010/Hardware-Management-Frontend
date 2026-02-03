@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { signupUser } from '../../api/auth';
-
+import ROUTES from '../../routes/routePaths';
 const Signup = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ const Signup = () => {
       const res=await signupUser(signupData);
       console.log("success!",res);
       alert("Account Created Successfully!!");
-      navigate('/login');
+      navigate(ROUTES.USER.HOME);
     }
     catch(err){
       // setError(err.message);
@@ -121,7 +121,7 @@ const Signup = () => {
 
         <p className="text-sm text-center text-gray-400 mt-6">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-400 hover:underline">
+          <Link to={ROUTES.USER.LOGIN} className="text-blue-400 hover:underline">
             Login
           </Link>
         </p>

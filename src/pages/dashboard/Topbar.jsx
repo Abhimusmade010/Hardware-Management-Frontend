@@ -1,19 +1,23 @@
 
 // import { useAuth } from "../../context/AuthContext";
-
+import ROUTES from "../../routes/routePaths";
 import { useState } from "react";
 import ProfilePopup from "./Main/ProfilePopup";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../../context/AuthContext";
 const Topbar = () => {
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
+  const {logout} =useAuth();
 
   const handleLogout = () => {
-    // clear auth (token, context, etc.)
+    //clear auth (token, context, etc.)
+
     logout();
-    localStorage.removeItem("token");
-    navigate("/login", { replace: true });
+
+    // localStorage.removeItem("token");
+    
+    navigate(ROUTES.USER.LOGIN);
   };
 
   return (
