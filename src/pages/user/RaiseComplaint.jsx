@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import DashboardLayout from '../../components/Layouts/DashboardLayout';
+import Navbar from '../../components/Layouts/Navbar';
 import { useAuth } from '../../context/AuthContext';
 import { raiseComplaint } from '../../api/complaint';
 import toast, { Toaster } from 'react-hot-toast';
-import { Loader, Monitor, AlignLeft, AlertTriangle, AlertCircle } from 'react-feather';
+import { Loader, Monitor, AlignLeft, AlertTriangle, AlertCircle, CheckCircle } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 
 const RaiseComplaint = () => {
@@ -11,6 +11,7 @@ const RaiseComplaint = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [submittedComplaint, setSubmittedComplaint] = useState(null);
 
     const [formData, setFormData] = useState({
         assetId: '',
@@ -52,12 +53,11 @@ const RaiseComplaint = () => {
                 assetId: Number(formData.assetId)
             };
 
-            await raiseComplaint(payload, token);
+            const res = await raiseComplaint(payload, token);
             toast.success('Complaint submitted successfully!');
             
-            setTimeout(() => {
-                navigate('/user/home');
-            }, 1000);
+            const newComplaint = res.data?.data?.complaint || res.data?.complaint;
+            setSubmittedComplaint(newComplaint || payload);
 
         } catch (err) {
             const errorMsg = err.response?.data?.error || err.response?.data?.message || 'Failed to submit complaint. Please try again.';
@@ -69,12 +69,15 @@ const RaiseComplaint = () => {
     };
 
     return (
-        <DashboardLayout title="Raise Complaint">
+        <div className="min-h-screen flex flex-col bg-[#f9fafb] font-sans text-gray-900">
             <Toaster position="top-center" />
-            
-            <div className="max-w-2xl mx-auto">
-                <div className="mb-8">
-                    <h1 className="text-2xl font-semibold text-gray-900">Raise a New Complaint</h1>
+            <Navbar />
+
+            {/* Main Content */}
+            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div className="max-w-2xl mx-auto">
+                    <div className="mb-8">
+                        <h1 className="text-2xl font-semibold text-gray-900">Raise a New Complaint</h1>
                     <p className="text-[15px] text-gray-500 mt-1">Please provide the details of the issue you are facing so we can help you faster.</p>
                 </div>
 
@@ -187,7 +190,48 @@ const RaiseComplaint = () => {
                     </form>
                 </div>
             </div>
-        </DashboardLayout>
+
+            {/* Success Modal */}
+            {submittedComplaint && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden text-center p-8 transform transition-all scale-100 opacity-100">
+                        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-5">
+                            <CheckCircle size={32} />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">Complaint Submitted!</h3>
+                        <p className="text-[15px] text-gray-500 mb-6">
+                            Your issue has been successfully logged.
+                            <br />
+                            Asset ID: <span className="font-semibold text-gray-900">#{submittedComplaint.assetId}</span>
+                        </p>
+                        <div className="flex flex-col gap-3">
+                            <button 
+                                onClick={() => navigate('/user/dashboard')} 
+                                className="w-full bg-[#111827] text-white py-2.5 rounded-lg font-medium text-[15px] hover:bg-gray-800 transition-colors shadow-sm"
+                            >
+                                Track Issue
+                            </button>
+                            <button 
+                                onClick={() => { 
+                                    setSubmittedComplaint(null); 
+                                    setFormData({assetId: '', category: 'Hardware', priority: 'Medium', description: ''}); 
+                                }} 
+                                className="w-full bg-white border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium text-[15px] hover:bg-gray-50 transition-colors"
+                            >
+                                Raise Another Complaint
+                            </button>
+                            <button 
+                                onClick={() => navigate('/user/home')} 
+                                className="w-full text-gray-500 hover:text-gray-900 text-[14px] font-medium py-2 mt-1 transition-colors"
+                            >
+                                Go to Home
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            </main>
+        </div>
     );
 };
 

@@ -11,12 +11,12 @@ const Home = () => {
             <main className="flex-1">
                 {/* Hero Section */}
                 <section className="bg-[#f9fafb] border-b border-gray-200">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 flex flex-col md:flex-row items-center gap-12">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 flex flex-col md:flex-row items-center gap-8 lg:gap-12">
                         <div className="flex-1 text-center md:text-left">
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 mb-6">
+                            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-4 lg:mb-6 leading-tight">
                                 Streamlining College Hardware Maintenance
                             </h1>
-                            <p className="text-lg md:text-xl text-gray-500 mb-8 max-w-2xl mx-auto md:mx-0">
+                            <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto md:mx-0">
                                 The centralized portal for reporting and tracking hardware and software issues across the campus. Experience faster resolution times and complete transparency.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
@@ -35,12 +35,12 @@ const Home = () => {
                                 </Link>
                             </div>
                         </div>
-                        <div className="flex-1 flex justify-center md:justify-end w-full max-w-md md:max-w-none">
-                            <div className="relative w-full aspect-square max-w-md">
+                        <div className="flex-1 flex justify-center md:justify-end w-full max-w-sm md:max-w-md mt-6 md:mt-0">
+                            <div className="relative w-full aspect-square max-w-[380px]">
                                 <div className="absolute inset-0 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
-                                <div className="relative bg-white p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 flex flex-col gap-6 transform rotate-3">
-                                    <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
-                                        <div className="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center">
+                                <div className="relative bg-white p-6 sm:p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 flex flex-col gap-4 sm:gap-5 transform rotate-3">
+                                    <div className="flex items-center gap-4 border-b border-gray-100 pb-3 sm:pb-4">
+                                        <div className="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center shrink-0">
                                             <Tool size={20} />
                                         </div>
                                         <div>
@@ -48,8 +48,8 @@ const Home = () => {
                                             <p className="text-sm text-gray-500">Room 304 • Hardware</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4 border-b border-gray-100 pb-4 opacity-70">
-                                        <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+                                    <div className="flex items-center gap-4 border-b border-gray-100 pb-3 sm:pb-4 opacity-70">
+                                        <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center shrink-0">
                                             <Shield size={20} />
                                         </div>
                                         <div>
@@ -58,7 +58,7 @@ const Home = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4 opacity-40">
-                                        <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                                        <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shrink-0">
                                             <Clock size={20} />
                                         </div>
                                         <div>
