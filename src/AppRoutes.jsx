@@ -7,17 +7,23 @@ import MaintenanceRoutes from "./routes/Maintenance";
 
 const AppRoutes = () => {
   return (
+
     <Routes>
+
       <Route path={ROUTES.ROOT} element={<LandingPage />} />
 
-      <Route path={`${ROUTES.USER.ROOT}/*`} element={<UserRoutes />} />
+      <Route path={`${ROUTES.USER.ROOT}/*`} element={<UserRoutes/>} />
 
       <Route
         path={`${ROUTES.MAINTENANCE.ROOT}/*`}
         element={<MaintenanceRoutes />}
       />
+      
     </Routes>
+    
   );
 };
+
+
 
 export default AppRoutes;
