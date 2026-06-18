@@ -14,7 +14,7 @@ const Home = () => {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 flex flex-col md:flex-row items-center gap-8 lg:gap-12">
                         <div className="flex-1 text-center md:text-left">
                             <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-4 lg:mb-6 leading-tight">
-                                Streamlining College Hardware Maintenance
+                                Streamlining College Hardware/Software Maintenance
                             </h1>
                             <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto md:mx-0">
                                 The centralized portal for reporting and tracking hardware and software issues across the campus. Experience faster resolution times and complete transparency.
@@ -114,14 +114,14 @@ const Home = () => {
                             <polyline points="16 6 12 2 8 6"></polyline>
                             <line x1="12" y1="2" x2="12" y2="15"></line>
                         </svg>
-                        College Portal.
+                        College Complaint Portal.
                     </div>
                     <p className="text-sm text-gray-500">
-                        &copy; {new Date().getFullYear()} College Hardware Support System. All rights reserved.
+                        &copy; {new Date().getFullYear()} College Complaint Portal. All rights reserved.
                     </p>
                     <div className="flex gap-4 text-sm text-gray-500">
                         <Link to="#" className="hover:text-gray-900 transition-colors">Privacy</Link>
-                        <Link to="#" className="hover:text-gray-900 transition-colors">Terms</Link>
+                        {/* <Link to="#" className="hover:text-gray-900 transition-colors">Terms</Link> */}
                     </div>
                 </div>
             </footer>

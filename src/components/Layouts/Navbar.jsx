@@ -28,7 +28,7 @@ const Navbar = () => {
                                 <line x1="12" y1="2" x2="12" y2="15"></line>
                             </svg>
                         </div>
-                        <span className="font-semibold text-lg tracking-tight">College Portal.</span>
+                        <span className="font-semibold text-lg tracking-tight">College Complaint Portal.</span>
                     </div>
 
                     {/* Navigation Links */}
