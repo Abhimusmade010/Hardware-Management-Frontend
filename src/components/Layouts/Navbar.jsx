@@ -4,7 +4,7 @@ import { LogOut, Plus, User, Bell } from 'react-feather';
 import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -51,19 +51,22 @@ const Navbar = () => {
                             <Bell size={20} />
                             <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
                         </button>
-                        <Link 
-                            to="/user/raise" 
-                            className="hidden sm:flex items-center gap-2 bg-[#111827] text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-gray-800 transition-colors"
-                        >
-                            <Plus size={16} />
-                            Raise Complaint
-                        </Link>
+                        {user?.Role !== 'maintainance' && (
+                            <Link 
+                                to="/user/raise" 
+                                className="hidden sm:flex items-center gap-2 bg-[#111827] text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-gray-800 transition-colors"
+                            >
+                                <Plus size={16} />
+                                Raise Complaint
+                            </Link>
+                        )}
                         <button 
                             onClick={handleLogout}
-                            className="text-gray-500 hover:text-red-600 transition-colors p-2"
+                            className="flex items-center gap-2 text-gray-600 hover:text-white hover:bg-red-600 border border-gray-200 hover:border-red-600 transition-colors px-3 sm:px-4 py-2 rounded-md font-medium text-sm"
                             title="Logout"
                         >
-                            <LogOut size={20} />
+                            <span className="hidden sm:inline">Logout</span>
+                            <LogOut size={16} />
                         </button>
                     </div>
                 </div>

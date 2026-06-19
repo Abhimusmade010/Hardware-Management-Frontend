@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { getComplaintDetails, addNoteToComplaint } from '../../api/complaint';
+import { getComplaintDetails, addNoteToComplaint, updateComplaintStatus } from '../../api/complaint';
 import Navbar from '../../components/Layouts/Navbar';
 import toast, { Toaster } from 'react-hot-toast';
 import { ArrowLeft, Monitor, AlignLeft, Clock, AlertTriangle, CheckCircle, User, Info, FileText, MessageSquare, Send } from 'react-feather';
@@ -16,6 +16,10 @@ const ComplaintDetails = () => {
     
     const [noteMessage, setNoteMessage] = useState("");
     const [submittingNote, setSubmittingNote] = useState(false);
+
+    const [newStatus, setNewStatus] = useState("");
+    const [resolutionDetails, setResolutionDetails] = useState("");
+    const [updatingStatus, setUpdatingStatus] = useState(false);
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -63,6 +67,30 @@ const ComplaintDetails = () => {
             toast.error(err.response?.data?.message || "Failed to add note");
         } finally {
             setSubmittingNote(false);
+        }
+    };
+
+    const handleStatusUpdate = async (e) => {
+        e.preventDefault();
+        if (!newStatus) return;
+
+        setUpdatingStatus(true);
+        try {
+            const data = { status: newStatus };
+            if (newStatus === 'resolved' || newStatus === 'closed') {
+                data.resolutionDetails = resolutionDetails;
+            }
+            await updateComplaintStatus(id, data, token);
+            toast.success("Status updated successfully!");
+            setNewStatus("");
+            setResolutionDetails("");
+            
+            const res = await getComplaintDetails(id, token);
+            setComplaint(res.data?.data?.complaint || res.data?.complaint);
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to update status");
+        } finally {
+            setUpdatingStatus(false);
         }
     };
 
@@ -186,6 +214,61 @@ const ComplaintDetails = () => {
                                             Resolved on: {new Date(complaint.resolutionDate).toLocaleString()}
                                         </p>
                                     )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Status Update Card (Maintenance Only) */}
+                        {user?.Role === 'maintainance' && complaint.status !== 'closed' && complaint.status !== 'resolved' && (
+                            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                                <div className="p-5 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+                                    <AlertTriangle size={18} className="text-yellow-600" />
+                                    <h3 className="text-base font-semibold text-gray-900">Update Status</h3>
+                                </div>
+                                <div className="p-6">
+                                    <form onSubmit={handleStatusUpdate} className="flex flex-col gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">New Status</label>
+                                            <select 
+                                                value={newStatus}
+                                                onChange={(e) => setNewStatus(e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
+                                                required
+                                            >
+                                                <option value="" disabled>Select Status</option>
+                                                <option value="in-progress">In Progress</option>
+                                                <option value="resolved">Resolved</option>
+                                                <option value="escalated">Escalated</option>
+                                                <option value="closed">Closed</option>
+                                            </select>
+                                        </div>
+                                        
+                                        {(newStatus === 'resolved' || newStatus === 'closed') && (
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1.5">Resolution Details</label>
+                                                <textarea
+                                                    value={resolutionDetails}
+                                                    onChange={(e) => setResolutionDetails(e.target.value)}
+                                                    placeholder="Provide details on how this issue was resolved..."
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all resize-none min-h-[100px]"
+                                                    required
+                                                />
+                                            </div>
+                                        )}
+
+                                        <button 
+                                            type="submit" 
+                                            disabled={updatingStatus || !newStatus}
+                                            className="self-start mt-2 bg-[#111827] text-white px-6 py-2.5 rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                        >
+                                            {updatingStatus ? (
+                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                            ) : (
+                                                <CheckCircle size={16} />
+                                            )}
+                                            {updatingStatus ? "Updating..." : "Update Status"}
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         )}

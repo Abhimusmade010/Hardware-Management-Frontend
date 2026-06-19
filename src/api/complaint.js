@@ -54,4 +54,11 @@ export const addNoteToComplaint = async (id, noteData, token) => {
     });
 };
 
-
+// update complaint status (Maintenance/Admin only)
+export const updateComplaintStatus = async (id, statusData, token) => {
+    return await axios.patch(`${API_URL}/${id}/status`, statusData, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+};

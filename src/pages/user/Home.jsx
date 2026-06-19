@@ -2,8 +2,10 @@ import React from 'react';
 import Navbar from '../../components/Layouts/Navbar';
 import { Link } from 'react-router-dom';
 import { Shield, Clock, Tool, ArrowRight } from 'react-feather';
+import { useAuth } from '../../context/AuthContext';
 
 const Home = () => {
+    const { user } = useAuth();
     return (
         <div className="min-h-screen flex flex-col bg-white font-sans text-gray-900">
             <Navbar />
@@ -20,16 +22,18 @@ const Home = () => {
                                 The centralized portal for reporting and tracking hardware and software issues across the campus. Experience faster resolution times and complete transparency.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
-                                <Link 
-                                    to="/user/raise" 
-                                    className="w-full sm:w-auto bg-[#111827] text-white font-medium px-8 py-3.5 rounded-lg hover:bg-gray-800 transition-colors shadow-sm flex items-center justify-center gap-2"
-                                >
-                                    Raise a Complaint
-                                    <ArrowRight size={18} />
-                                </Link>
+                                {user?.Role !== 'maintainance' && (
+                                    <Link 
+                                        to="/user/raise" 
+                                        className="w-full sm:w-auto bg-[#111827] text-white font-medium px-8 py-3.5 rounded-lg hover:bg-gray-800 transition-colors shadow-sm flex items-center justify-center gap-2"
+                                    >
+                                        Raise a Complaint
+                                        <ArrowRight size={18} />
+                                    </Link>
+                                )}
                                 <Link 
                                     to="/user/dashboard" 
-                                    className="w-full sm:w-auto bg-white text-gray-900 border border-gray-300 font-medium px-8 py-3.5 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
+                                    className={`w-full sm:w-auto font-medium px-8 py-3.5 rounded-lg transition-colors flex items-center justify-center ${user?.Role === 'maintainance' ? 'bg-[#111827] text-white hover:bg-gray-800 shadow-sm' : 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50'}`}
                                 >
                                     View Dashboard
                                 </Link>

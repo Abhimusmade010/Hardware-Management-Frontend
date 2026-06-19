@@ -160,20 +160,22 @@ const Dashboard = () => {
                                     className="pl-9 pr-4 py-2 w-full sm:w-64 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
                                 />
                             </div>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Filter size={16} className="text-gray-400" />
+                            {user?.Role !== 'maintainance' && (
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Filter size={16} className="text-gray-400" />
+                                    </div>
+                                    <select 
+                                        value={categoryFilter}
+                                        onChange={(e) => setCategoryFilter(e.target.value)}
+                                        className="pl-9 pr-8 py-2 w-full sm:w-auto border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
+                                    >
+                                        <option value="all">All Categories</option>
+                                        <option value="hardware">Hardware</option>
+                                        <option value="software">Software</option>
+                                    </select>
                                 </div>
-                                <select 
-                                    value={categoryFilter}
-                                    onChange={(e) => setCategoryFilter(e.target.value)}
-                                    className="pl-9 pr-8 py-2 w-full sm:w-auto border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
-                                >
-                                    <option value="all">All Categories</option>
-                                    <option value="hardware">Hardware</option>
-                                    <option value="software">Software</option>
-                                </select>
-                            </div>
+                            )}
                             <select 
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -200,7 +202,9 @@ const Dashboard = () => {
                                 </div>
                                 <h3 className="text-[16px] font-medium text-gray-900 mb-1">No complaints found</h3>
                                 <p className="text-[15px] text-gray-500 max-w-sm mb-6">
-                                    Try adjusting your search or filters, or raise a new ticket if you have an issue.
+                                    {user?.Role === 'maintainance' 
+                                        ? "There are currently no complaints assigned to your department." 
+                                        : "Try adjusting your search or filters, or raise a new ticket if you have an issue."}
                                 </p>
                             </div>
                         ) : (
