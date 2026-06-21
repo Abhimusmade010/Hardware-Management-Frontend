@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { getMyComplaints, addNoteToComplaint } from '../../api/complaint';
+import { getMyComplaints, addNoteToComplaint, getMyStats } from '../../api/complaint';
 import { Link, useNavigate } from 'react-router-dom';
 import { Grid, Clock, CheckCircle, List, ArrowRight, Search, Filter, MessageSquare, X, Send } from 'react-feather';
 import Navbar from '../../components/Layouts/Navbar';
@@ -12,10 +12,18 @@ const Dashboard = () => {
     const [complaints, setComplaints] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const limit = 10;
+
     // Search and Filter States
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [categoryFilter, setCategoryFilter] = useState("all");
+
+    // Stats State
+    const [stats, setStats] = useState({ total: '-', pending: '-', resolved: '-' });
 
     // Note Modal States
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -24,34 +32,55 @@ const Dashboard = () => {
     const [submittingNote, setSubmittingNote] = useState(false);
 
     useEffect(() => {
-        const fetchComplaints = async () => {
-            if (!token) return;
-            try {
-                const res = await getMyComplaints(token);
-                const data = res.data?.data?.complaints || res.data?.complaints || [];
-                setComplaints(data);
-            } catch (err) {
-                console.error("Failed to fetch complaints:", err);
-                toast.error("Failed to load complaints");
-            } finally {
-                setLoading(false);
-            }
+        const fetchStats = async () => {
+             if (!token) return;
+             try {
+                 const res = await getMyStats(token);
+                 const s = res.data?.data?.stats;
+                 if (s) {
+                     setStats({
+                         total: s.total || 0,
+                         pending: s.pending || 0,
+                         resolved: (s.resolved || 0) + (s.closed || 0)
+                     });
+                 }
+             } catch(err) {}
         };
-        fetchComplaints();
+        fetchStats();
     }, [token]);
 
-    // Calculate basic stats from fetched complaints
-    const totalComplaints = complaints.length;
-    const pendingComplaints = complaints.filter(c => c.status !== 'resolved' && c.status !== 'closed').length;
-    const resolvedComplaints = complaints.filter(c => c.status === 'resolved' || c.status === 'closed').length;
+    const fetchComplaints = async () => {
+        if (!token) return;
+        setLoading(true);
+        try {
+            const params = {
+                page: currentPage,
+                limit,
+                search: searchQuery,
+                status: statusFilter,
+                category: categoryFilter
+            };
+            const res = await getMyComplaints(token, params);
+            const data = res.data?.data?.complaints || res.data?.complaints || [];
+            setComplaints(data);
+            if (res.data?.pagination) {
+                setTotalPages(res.data.pagination.pages);
+            }
+        } catch (err) {
+            console.error("Failed to fetch complaints:", err);
+            toast.error("Failed to load complaints");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // Filter complaints
-    const filteredComplaints = complaints.filter(c => {
-        const matchesSearch = c.assetId?.toString().includes(searchQuery) || c.description?.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || c.status?.toLowerCase() === statusFilter.toLowerCase();
-        const matchesCategory = categoryFilter === 'all' || c.category?.toLowerCase() === categoryFilter.toLowerCase();
-        return matchesSearch && matchesStatus && matchesCategory;
-    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    useEffect(() => {
+        fetchComplaints();
+    }, [token, currentPage, searchQuery, statusFilter, categoryFilter]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, statusFilter, categoryFilter]);
 
     const getStatusStyle = (status) => {
         switch(status?.toLowerCase()) {
@@ -82,16 +111,22 @@ const Dashboard = () => {
             toast.success("Note added successfully!");
             setNoteMessage("");
             
-            // Refresh complaints
-            const res = await getMyComplaints(token);
-            const data = res.data?.data?.complaints || res.data?.complaints || [];
-            setComplaints(data);
+            // Refresh complaints with current pagination and filters
+            await fetchComplaints();
             
             // Update selected complaint for live modal refresh
-            const updatedComplaint = data.find(c => c._id === selectedComplaint._id);
-            if (updatedComplaint) {
-                setSelectedComplaint(updatedComplaint);
-            }
+            // Since fetchComplaints updates state asynchronously, we can either
+            // wait for it or just fetch the single complaint. For now we will rely on
+            // the state update or fetch single if needed.
+            // A quick fix is to append the note locally to the selectedComplaint
+            setSelectedComplaint(prev => ({
+                ...prev,
+                notes: [...(prev.notes || []), {
+                    message: noteMessage,
+                    addedBy: user?.Role || 'user',
+                    createdAt: new Date().toISOString()
+                }]
+            }));
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to add note");
         } finally {
@@ -115,7 +150,7 @@ const Dashboard = () => {
                         </div>
                         <div>
                             <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Total Filed</p>
-                            <h3 className="text-3xl font-bold text-gray-900">{loading ? '-' : totalComplaints}</h3>
+                            <h3 className="text-3xl font-bold text-gray-900">{stats.total}</h3>
                         </div>
                     </div>
                     <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
@@ -124,7 +159,7 @@ const Dashboard = () => {
                         </div>
                         <div>
                             <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Pending</p>
-                            <h3 className="text-3xl font-bold text-gray-900">{loading ? '-' : pendingComplaints}</h3>
+                            <h3 className="text-3xl font-bold text-gray-900">{stats.pending}</h3>
                         </div>
                     </div>
                     <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
@@ -133,7 +168,7 @@ const Dashboard = () => {
                         </div>
                         <div>
                             <p className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Resolved</p>
-                            <h3 className="text-3xl font-bold text-gray-900">{loading ? '-' : resolvedComplaints}</h3>
+                            <h3 className="text-3xl font-bold text-gray-900">{stats.resolved}</h3>
                         </div>
                     </div>
                 </section>
@@ -195,7 +230,7 @@ const Dashboard = () => {
                             <div className="p-12 flex justify-center items-center">
                                 <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin"></div>
                             </div>
-                        ) : filteredComplaints.length === 0 ? (
+                        ) : complaints.length === 0 ? (
                             <div className="p-12 flex flex-col items-center justify-center text-center">
                                 <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
                                     <List size={28} className="text-gray-400" />
@@ -221,7 +256,7 @@ const Dashboard = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {filteredComplaints.map((complaint) => (
+                                        {complaints.map((complaint) => (
                                             <tr 
                                                 key={complaint._id} 
                                                 onClick={() => navigate(`/user/complaints/${complaint._id}`)}
@@ -269,6 +304,29 @@ const Dashboard = () => {
                                         ))}
                                     </tbody>
                                 </table>
+                                
+                                {/* Pagination Controls */}
+                                {totalPages > 1 && (
+                                    <div className="p-4 border-t border-gray-200 flex items-center justify-between">
+                                        <button 
+                                            disabled={currentPage === 1}
+                                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                                        >
+                                            Previous
+                                        </button>
+                                        <span className="text-sm text-gray-500">
+                                            Page {currentPage} of {totalPages}
+                                        </span>
+                                        <button 
+                                            disabled={currentPage === totalPages}
+                                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

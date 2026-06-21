@@ -3,7 +3,7 @@ import Navbar from '../../components/Layouts/Navbar';
 import { useAuth } from '../../context/AuthContext';
 import { raiseComplaint } from '../../api/complaint';
 import toast, { Toaster } from 'react-hot-toast';
-import { Loader, Monitor, AlignLeft, AlertTriangle, AlertCircle, CheckCircle } from 'react-feather';
+import { Loader, Monitor, AlignLeft, AlertTriangle, AlertCircle, CheckCircle, Image as ImageIcon, X } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 
 const RaiseComplaint = () => {
@@ -19,11 +19,26 @@ const RaiseComplaint = () => {
         priority: 'Medium',
         description: ''
     });
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
         if (error) setError('');
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const removeImage = () => {
+        setImageFile(null);
+        setImagePreview(null);
     };
 
     const validateForm = () => {
@@ -47,11 +62,21 @@ const RaiseComplaint = () => {
         setError('');
 
         try {
-            // Convert assetId to number as per backend schema
-            const payload = {
-                ...formData,
-                assetId: Number(formData.assetId)
-            };
+            let payload;
+            if (imageFile) {
+                payload = new FormData();
+                payload.append('assetId', Number(formData.assetId));
+                payload.append('category', formData.category);
+                payload.append('priority', formData.priority);
+                payload.append('description', formData.description);
+                payload.append('image', imageFile);
+            } else {
+                // Convert assetId to number as per backend schema
+                payload = {
+                    ...formData,
+                    assetId: Number(formData.assetId)
+                };
+            }
 
             const res = await raiseComplaint(payload, token);
             toast.success('Complaint submitted successfully!');
@@ -163,6 +188,38 @@ const RaiseComplaint = () => {
                             </div>
                         </div>
 
+                        {/* Row 4: Image Upload */}
+                        <div>
+                            <label className="block text-[14px] font-medium text-gray-700 mb-1.5">Attach Image (Optional)</label>
+                            {!imagePreview ? (
+                                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md bg-[#edf2f7] hover:bg-gray-50 transition-colors relative cursor-pointer">
+                                    <div className="space-y-1 text-center">
+                                        <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                                        <div className="flex text-sm text-gray-600 justify-center">
+                                            <label htmlFor="file-upload" className="relative cursor-pointer bg-transparent rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                                <span>Upload a file</span>
+                                                <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/*" onChange={handleImageChange} />
+                                            </label>
+                                        </div>
+                                        <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                                    </div>
+                                    <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*" onChange={handleImageChange} title="" />
+                                </div>
+                            ) : (
+                                <div className="mt-1 relative rounded-md overflow-hidden bg-gray-100 border border-gray-200 inline-block">
+                                    <img src={imagePreview} alt="Preview" className="max-h-48 object-contain" />
+                                    <button 
+                                        type="button"
+                                        onClick={removeImage}
+                                        className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full transition-colors"
+                                        title="Remove Image"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
                         {/* Action Buttons */}
                         <div className="pt-2 flex items-center justify-end gap-3 border-t border-gray-100 mt-2">
                             <button
@@ -215,6 +272,7 @@ const RaiseComplaint = () => {
                                 onClick={() => { 
                                     setSubmittedComplaint(null); 
                                     setFormData({assetId: '', category: 'Hardware', priority: 'Medium', description: ''}); 
+                                    removeImage();
                                 }} 
                                 className="w-full bg-white border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium text-[15px] hover:bg-gray-50 transition-colors"
                             >

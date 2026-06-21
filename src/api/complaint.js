@@ -13,12 +13,12 @@ export const raiseComplaint = async (complaintData, token) => {
     });
 };
 // here get my complaints route 
-export const getMyComplaints = async (token) => {
-    
+export const getMyComplaints = async (token, params = {}) => {
     return await axios.get(`${API_URL}/my-complaints`, {
         headers: {
             Authorization: `Bearer ${token}`
-        }
+        },
+        params
     });
 };
 // get all complaints stats

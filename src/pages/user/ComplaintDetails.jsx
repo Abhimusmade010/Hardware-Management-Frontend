@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { getComplaintDetails, addNoteToComplaint, updateComplaintStatus } from '../../api/complaint';
 import Navbar from '../../components/Layouts/Navbar';
 import toast, { Toaster } from 'react-hot-toast';
-import { ArrowLeft, Monitor, AlignLeft, Clock, AlertTriangle, CheckCircle, User, Info, FileText, MessageSquare, Send } from 'react-feather';
+import { ArrowLeft, Monitor, AlignLeft, Clock, AlertTriangle, CheckCircle, User, Info, FileText, MessageSquare, Send, Image as ImageIcon } from 'react-feather';
 
 const ComplaintDetails = () => {
     const { id } = useParams();
@@ -20,6 +20,7 @@ const ComplaintDetails = () => {
     const [newStatus, setNewStatus] = useState("");
     const [resolutionDetails, setResolutionDetails] = useState("");
     const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [statusError, setStatusError] = useState(false);
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -72,7 +73,10 @@ const ComplaintDetails = () => {
 
     const handleStatusUpdate = async (e) => {
         e.preventDefault();
-        if (!newStatus) return;
+        if (!newStatus) {
+            setStatusError(true);
+            return;
+        }
 
         setUpdatingStatus(true);
         try {
@@ -195,6 +199,21 @@ const ComplaintDetails = () => {
                                         {complaint.description}
                                     </p>
                                 </div>
+
+                                {complaint.attachments && complaint.attachments.length > 0 && (
+                                    <div className="mt-8 pt-6 border-t border-gray-100">
+                                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                            <ImageIcon size={14} /> Attached Image
+                                        </p>
+                                        <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50 inline-block">
+                                            <img 
+                                                src={complaint.attachments[0]} 
+                                                alt="Complaint Attachment" 
+                                                className="max-h-96 object-contain"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -231,9 +250,11 @@ const ComplaintDetails = () => {
                                             <label className="block text-sm font-medium text-gray-700 mb-1.5">New Status</label>
                                             <select 
                                                 value={newStatus}
-                                                onChange={(e) => setNewStatus(e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
-                                                required
+                                                onChange={(e) => {
+                                                    setNewStatus(e.target.value);
+                                                    setStatusError(false);
+                                                }}
+                                                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer ${statusError ? 'border-red-500' : 'border-gray-300'}`}
                                             >
                                                 <option value="" disabled>Select Status</option>
                                                 <option value="in-progress">In Progress</option>
@@ -241,6 +262,11 @@ const ComplaintDetails = () => {
                                                 <option value="escalated">Escalated</option>
                                                 <option value="closed">Closed</option>
                                             </select>
+                                            {statusError && (
+                                                <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                                                    <AlertTriangle size={12} /> Please select a status to update.
+                                                </p>
+                                            )}
                                         </div>
                                         
                                         {(newStatus === 'resolved' || newStatus === 'closed') && (
@@ -258,7 +284,7 @@ const ComplaintDetails = () => {
 
                                         <button 
                                             type="submit" 
-                                            disabled={updatingStatus || !newStatus}
+                                            disabled={updatingStatus}
                                             className="self-start mt-2 bg-[#111827] text-white px-6 py-2.5 rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                         >
                                             {updatingStatus ? (
