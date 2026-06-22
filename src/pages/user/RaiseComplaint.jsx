@@ -12,6 +12,7 @@ const RaiseComplaint = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [submittedComplaint, setSubmittedComplaint] = useState(null);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const [formData, setFormData] = useState({
         assetId: '',
@@ -53,11 +54,14 @@ const RaiseComplaint = () => {
         return true;
     };
 
-    const handleSubmit = async (e) => {
+    const handleInitialSubmit = (e) => {
         e.preventDefault();
-        
         if (!validateForm()) return;
+        setShowConfirmModal(true);
+    };
 
+    const confirmSubmit = async () => {
+        setShowConfirmModal(false);
         setLoading(true);
         setError('');
 
@@ -114,7 +118,7 @@ const RaiseComplaint = () => {
                 )}
 
                 <div className="bg-white border border-gray-200 rounded-xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] overflow-hidden">
-                    <form onSubmit={handleSubmit} className="p-8 flex flex-col gap-6">
+                    <form onSubmit={handleInitialSubmit} className="p-8 flex flex-col gap-6">
                         
                         {/* Row 1: Asset ID & Category */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -247,6 +251,35 @@ const RaiseComplaint = () => {
                     </form>
                 </div>
             </div>
+
+            {/* Confirmation Modal */}
+            {showConfirmModal && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden text-center p-8 transform transition-all scale-100 opacity-100">
+                        <div className="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-5">
+                            <AlertCircle size={32} />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">Confirm Submission</h3>
+                        <p className="text-[15px] text-gray-500 mb-6">
+                            Are you sure you want to submit this complaint?
+                        </p>
+                        <div className="flex gap-3 justify-center">
+                            <button 
+                                onClick={() => setShowConfirmModal(false)}
+                                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2.5 rounded-lg transition-colors"
+                            >
+                                No
+                            </button>
+                            <button 
+                                onClick={confirmSubmit}
+                                className="w-full bg-[#111827] hover:bg-gray-800 text-white font-medium py-2.5 rounded-lg transition-colors"
+                            >
+                                Yes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Success Modal */}
             {submittedComplaint && (

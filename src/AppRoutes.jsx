@@ -4,6 +4,7 @@ import ROUTES from "./routes/routePaths";
 import LandingPage from "./LandingPage";
 import UserRoutes from "./routes/UserRoutes";
 import MaintenanceRoutes from "./routes/Maintenance";
+import AdminRoutes from "./routes/AdminRoutes";
 
 // 
 const AppRoutes = () => {
@@ -19,6 +20,8 @@ const AppRoutes = () => {
         path={`${ROUTES.MAINTENANCE.ROOT}/*`}
         element={<MaintenanceRoutes />}
       />
+
+      <Route path="/admin/*" element={<AdminRoutes />} />
       
     </Routes>
     
