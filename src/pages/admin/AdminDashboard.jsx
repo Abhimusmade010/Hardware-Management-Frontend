@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { getDashboardStats } from '../../api/admin';
+import { getDashboardStats, getMaintenanceEngineers } from '../../api/admin';
 import { getMyComplaints, addNoteToComplaint } from '../../api/complaint';
-import { Activity, AlertTriangle, CheckCircle, Clock, Grid, List, Search, Filter, MessageSquare, X, Send } from 'react-feather';
+import { Activity, AlertTriangle, CheckCircle, Clock, Grid, List, Search, Filter, MessageSquare, X, Send, Users } from 'react-feather';
 import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
@@ -21,6 +21,10 @@ const AdminDashboard = () => {
     const [statusFilter, setStatusFilter] = useState("all");
     const [categoryFilter, setCategoryFilter] = useState("all");
 
+    // Engineers state
+    const [engineers, setEngineers] = useState([]);
+    const [loadingEngineers, setLoadingEngineers] = useState(true);
+
     // Note Modal
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [selectedComplaint, setSelectedComplaint] = useState(null);
@@ -38,8 +42,26 @@ const AdminDashboard = () => {
                 setLoading(false);
             }
         };
-        if(token) {
+        if (token) {
             fetchStats();
+        }
+    }, [token]);
+
+    useEffect(() => {
+        const fetchEngineers = async () => {
+            setLoadingEngineers(true);
+            try {
+                const res = await getMaintenanceEngineers(token);
+                setEngineers(res.data.data || []);
+            } catch (error) {
+                console.error("Failed to fetch engineers", error);
+                toast.error("Failed to load engineers");
+            } finally {
+                setLoadingEngineers(false);
+            }
+        };
+        if(token) {
+            fetchEngineers();
         }
     }, [token]);
 
@@ -60,10 +82,12 @@ const AdminDashboard = () => {
             if (res.data?.pagination) {
                 setTotalPages(res.data.pagination.pages);
             }
-        } catch (err) {
+        }
+        catch (err) {
             console.error("Failed to fetch complaints:", err);
             toast.error("Failed to load complaints");
-        } finally {
+        }
+        finally {
             setLoadingComplaints(false);
         }
     };
@@ -77,7 +101,7 @@ const AdminDashboard = () => {
     }, [searchQuery, statusFilter, categoryFilter]);
 
     const getStatusStyle = (status) => {
-        switch(status?.toLowerCase()) {
+        switch (status?.toLowerCase()) {
             case 'resolved':
             case 'closed':
                 return 'bg-green-100 text-green-700';
@@ -104,9 +128,9 @@ const AdminDashboard = () => {
             await addNoteToComplaint(selectedComplaint._id, { message: noteMessage }, token);
             toast.success("Note added successfully!");
             setNoteMessage("");
-            
+
             await fetchComplaints();
-            
+
             setSelectedComplaint(prev => ({
                 ...prev,
                 notes: [...(prev.notes || []), {
@@ -115,9 +139,11 @@ const AdminDashboard = () => {
                     createdAt: new Date().toISOString()
                 }]
             }));
-        } catch (err) {
+        }
+        catch (err) {
             toast.error(err.response?.data?.message || "Failed to add note");
-        } finally {
+        }
+        finally {
             setSubmittingNote(false);
         }
     };
@@ -146,31 +172,92 @@ const AdminDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                <StatCard 
-                    title="Total Complaints" 
-                    value={stats?.totalComplaints} 
+                <StatCard
+                    title="Total Complaints"
+                    value={stats?.totalComplaints}
                     icon={<Activity size={24} className="text-blue-600" />}
                     color="bg-blue-50"
                 />
-                <StatCard 
-                    title="Pending" 
-                    value={stats?.inProgressCount} 
+                <StatCard
+                    title="Pending"
+                    value={stats?.inProgressCount}
                     icon={<Clock size={24} className="text-yellow-600" />}
                     color="bg-yellow-50"
                 />
-                <StatCard 
-                    title="Escalated" 
-                    value={stats?.escalatedCount} 
+                <StatCard
+                    title="Escalated"
+                    value={stats?.escalatedCount}
                     icon={<AlertTriangle size={24} className="text-red-600" />}
                     color="bg-red-50"
                 />
-                <StatCard 
-                    title="Resolved" 
-                    value={stats?.resolvedCount } 
+                <StatCard
+                    title="Resolved"
+                    value={stats?.resolvedCount}
                     icon={<CheckCircle size={24} className="text-green-600" />}
                     color="bg-green-50"
                 />
             </div>
+
+            {/* Maintenance Engineers Section */}
+            <section className="mb-12">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
+                    <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                        <Users size={20} className="text-gray-400" />
+                        Maintenance Engineers
+                    </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {loadingEngineers ? (
+                        <div className="col-span-full p-12 flex justify-center items-center bg-white border border-gray-200 rounded-xl shadow-sm">
+                            <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin"></div>
+                        </div>
+                    ) : engineers.length === 0 ? (
+                        <div className="col-span-full p-12 flex flex-col items-center justify-center text-center bg-white border border-gray-200 rounded-xl shadow-sm">
+                            <Users size={28} className="text-gray-400 mb-4" />
+                            <h3 className="text-[16px] font-medium text-gray-900 mb-1">No Engineers Found</h3>
+                            <p className="text-[15px] text-gray-500">Add maintenance engineers to see them here.</p>
+                        </div>
+                    ) : (
+                        engineers.map(eng => (
+                            <div key={eng._id} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow">
+                                <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
+                                    <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold uppercase">
+                                        {eng.Name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold text-gray-900">{eng.Name}</h3>
+                                        <p className="text-sm text-gray-500">{eng.Email}</p>
+                                    </div>
+                                    <div className="ml-auto">
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                                            {eng.Specialization || 'General'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="text-center p-3 bg-gray-50 rounded-lg">
+                                        <p className="text-xs text-gray-500 font-medium uppercase mb-1">Total</p>
+                                        <p className="text-xl font-bold text-gray-900">{eng.stats?.total || 0}</p>
+                                    </div>
+                                    <div className="text-center p-3 bg-green-50 rounded-lg border border-green-100">
+                                        <p className="text-xs text-green-600 font-medium uppercase mb-1">Resolved</p>
+                                        <p className="text-xl font-bold text-green-700">{eng.stats?.resolved || 0}</p>
+                                    </div>
+                                    <div className="text-center p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+                                        <p className="text-xs text-yellow-600 font-medium uppercase mb-1">In Progress</p>
+                                        <p className="text-xl font-bold text-yellow-700">{eng.stats?.inProgress || 0}</p>
+                                    </div>
+                                    <div className="text-center p-3 bg-red-50 rounded-lg border border-red-100">
+                                        <p className="text-xs text-red-600 font-medium uppercase mb-1">Escalated</p>
+                                        <p className="text-xl font-bold text-red-700">{eng.stats?.escalated || 0}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </section>
 
             {/* Complaints Section */}
             <section>
@@ -179,16 +266,16 @@ const AdminDashboard = () => {
                         <Grid size={20} className="text-gray-400" />
                         All Complaints
                     </h2>
-                    
+
                     {/* Search & Filters */}
                     <div className="flex flex-col sm:flex-row gap-3">
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <Search size={16} className="text-gray-400" />
                             </div>
-                            <input 
-                                type="text" 
-                                placeholder="Search asset or desc..." 
+                            <input
+                                type="text"
+                                placeholder="Search asset or desc..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="pl-9 pr-4 py-2 w-full sm:w-64 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
@@ -198,7 +285,7 @@ const AdminDashboard = () => {
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <Filter size={16} className="text-gray-400" />
                             </div>
-                            <select 
+                            <select
                                 value={categoryFilter}
                                 onChange={(e) => setCategoryFilter(e.target.value)}
                                 className="pl-9 pr-8 py-2 w-full sm:w-auto border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
@@ -208,7 +295,7 @@ const AdminDashboard = () => {
                                 <option value="software">Software</option>
                             </select>
                         </div>
-                        <select 
+                        <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                             className="px-4 py-2 w-full sm:w-auto border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
@@ -218,7 +305,6 @@ const AdminDashboard = () => {
                             <option value="in-progress">In Progress</option>
                             <option value="resolved">Resolved</option>
                             <option value="escalated">Escalated</option>
-
                         </select>
                     </div>
                 </div>
@@ -247,24 +333,15 @@ const AdminDashboard = () => {
                                         <th className="p-4">User</th>
                                         <th className="p-4">Category</th>
                                         <th className="p-4 hidden sm:table-cell">Description</th>
-                                        {/* <th className="p-4">Date</th> */}
+                                        <th className="p-4">Date</th>
                                         <th className="p-4 text-center">Status</th>
-                                        
-                                        {/* ==========================================================Added the priority column */}
-                                        <th className="p-4 text-center">Priority</th>
-                                        <th className="p-4 text-center">Assigned To</th>
-
-
-
                                         <th className="p-4 pr-6 text-right">Actions</th>
-
-
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {complaints.map((complaint) => (
-                                        <tr 
-                                            key={complaint._id} 
+                                        <tr
+                                            key={complaint._id}
                                             className="hover:bg-gray-50 transition-colors"
                                         >
                                             <td className="p-4 pl-6">
@@ -284,38 +361,18 @@ const AdminDashboard = () => {
                                             <td className="p-4 text-gray-600 text-sm max-w-xs truncate hidden sm:table-cell">
                                                 {complaint.description}
                                             </td>
-                                            {/* <td className="p-4 text-gray-500 text-sm whitespace-nowrap">
+                                            <td className="p-4 text-gray-500 text-sm whitespace-nowrap">
                                                 {new Date(complaint.createdAt).toLocaleDateString(undefined, {
                                                     month: 'short', day: 'numeric', year: 'numeric'
                                                 })}
-                                            </td> */}
+                                            </td>
                                             <td className="p-4 text-center whitespace-nowrap">
                                                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyle(complaint.status)}`}>
                                                     {complaint.status || 'Pending'}
                                                 </span>
                                             </td>
-
-                                            <td className="p-4 text-center whitespace-nowrap">
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                                                    {complaint.priority || 'Medium'}
-                                                </span>
-                                            </td>
-
-                                            <td className="p-4 text-center whitespace-nowrap">
-                                                {complaint.assignedTo ? (
-                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
-                                                        {complaint.assignedTo.Email}
-                                                    </span>
-                                                ) : (
-                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                                                        Not Assigned
-                                                    </span>
-                                                )}
-                                            </td>
-
-
                                             <td className="p-4 pr-6 text-right">
-                                                <button 
+                                                <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         openNoteModal(complaint);
@@ -335,11 +392,11 @@ const AdminDashboard = () => {
                                     ))}
                                 </tbody>
                             </table>
-                            
+
                             {/* Pagination Controls */}
                             {totalPages > 1 && (
                                 <div className="p-4 border-t border-gray-200 flex items-center justify-between">
-                                    <button 
+                                    <button
                                         disabled={currentPage === 1}
                                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                         className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
@@ -349,7 +406,7 @@ const AdminDashboard = () => {
                                     <span className="text-sm text-gray-500">
                                         Page {currentPage} of {totalPages}
                                     </span>
-                                    <button 
+                                    <button
                                         disabled={currentPage === totalPages}
                                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                         className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
@@ -376,8 +433,8 @@ const AdminDashboard = () => {
                                     Current Status: <span className="capitalize font-medium text-gray-700">{selectedComplaint.status}</span>
                                 </p>
                             </div>
-                            <button 
-                                onClick={() => setIsNoteModalOpen(false)} 
+                            <button
+                                onClick={() => setIsNoteModalOpen(false)}
                                 className="text-gray-400 hover:text-gray-900 bg-white p-1.5 rounded-full shadow-sm"
                             >
                                 <X size={20} />
@@ -412,15 +469,15 @@ const AdminDashboard = () => {
 
                         <div className="p-4 border-t border-gray-100 bg-gray-50">
                             <form onSubmit={handleNoteSubmit} className="flex gap-3 relative">
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={noteMessage}
                                     onChange={(e) => setNoteMessage(e.target.value)}
                                     placeholder="Type a note or reply..."
                                     className="flex-1 py-3 pl-4 pr-12 border border-gray-300 rounded-full text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all shadow-sm"
                                 />
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     disabled={submittingNote || !noteMessage.trim()}
                                     className="absolute right-2 top-2 bottom-2 bg-[#111827] text-white p-2 rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                                 >

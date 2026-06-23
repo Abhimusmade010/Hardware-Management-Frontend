@@ -248,12 +248,17 @@ const AdminProfile = () => {
                                     >
                                         Cancel
                                     </button>
-                                    <button 
-                                        type="submit" 
-                                        className="bg-[#111827] text-white hover:bg-gray-800 font-medium text-[14px] px-6 py-2.5 rounded-md transition-colors shadow-sm"
-                                    >
-                                        Update Password
-                                    </button>
+                                    {passwordData.newPassword && passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword && (
+                                        <span className="text-red-500 text-[13px] font-medium self-center mr-2">Passwords do not match</span>
+                                    )}
+                                    {passwordData.newPassword.length >= 6 && passwordData.newPassword === passwordData.confirmPassword && (
+                                        <button 
+                                            type="submit" 
+                                            className="bg-[#111827] text-white hover:bg-gray-800 font-medium text-[14px] px-6 py-2.5 rounded-md transition-colors shadow-sm"
+                                        >
+                                            Update Password
+                                        </button>
+                                    )}
                                 </div>
                             </form>
                         </div>

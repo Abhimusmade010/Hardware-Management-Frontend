@@ -23,3 +23,7 @@ export const getCategoryStats = (token) => {
 export const createMaintenanceUser = (data, token) => {
     return axios.post(`${API_URL}/admin/create-maintenance`, data, getAuthHeaders(token));
 };
+
+export const getMaintenanceEngineers = (token) => {
+    return axios.get(`${API_URL}/admin/engineers`, getAuthHeaders(token));
+};
