@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Home, UserPlus, LogOut, Settings, BarChart2 } from 'react-feather';
+import { Home, UserPlus, LogOut, Settings, User } from 'react-feather';
 import { useAuth } from '../../context/AuthContext';
 
 const AdminLayout = () => {
@@ -10,12 +10,13 @@ const AdminLayout = () => {
 
     const handleLogout = () => {
         logout();
-        navigate('/auth/login');
+        navigate('/user/login');
     };
 
     const navItems = [
         { path: '/admin/dashboard', icon: <Home size={20} />, label: 'Dashboard' },
         { path: '/admin/add-maintenance', icon: <UserPlus size={20} />, label: 'Add Engineer' },
+        { path: '/admin/profile', icon: <User size={20} />, label: 'Profile' },
     ];
 
     return (

@@ -1,12 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getDashboardStats } from '../../api/admin';
-import { Activity, AlertTriangle, CheckCircle, Clock } from 'react-feather';
+import { getMyComplaints, addNoteToComplaint } from '../../api/complaint';
+import { Activity, AlertTriangle, CheckCircle, Clock, Grid, List, Search, Filter, MessageSquare, X, Send } from 'react-feather';
+import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
-    const { token } = useAuth();
+    const { token, user } = useAuth();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    // Complaints state
+    const [complaints, setComplaints] = useState([]);
+    const [loadingComplaints, setLoadingComplaints] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const limit = 10;
+
+    const [searchQuery, setSearchQuery] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [categoryFilter, setCategoryFilter] = useState("all");
+
+    // Note Modal
+    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+    const [selectedComplaint, setSelectedComplaint] = useState(null);
+    const [noteMessage, setNoteMessage] = useState("");
+    const [submittingNote, setSubmittingNote] = useState(false);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -23,6 +42,85 @@ const AdminDashboard = () => {
             fetchStats();
         }
     }, [token]);
+
+    const fetchComplaints = async () => {
+        if (!token) return;
+        setLoadingComplaints(true);
+        try {
+            const params = {
+                page: currentPage,
+                limit,
+                search: searchQuery,
+                status: statusFilter,
+                category: categoryFilter
+            };
+            const res = await getMyComplaints(token, params);
+            const data = res.data?.data?.complaints || res.data?.complaints || [];
+            setComplaints(data);
+            if (res.data?.pagination) {
+                setTotalPages(res.data.pagination.pages);
+            }
+        } catch (err) {
+            console.error("Failed to fetch complaints:", err);
+            toast.error("Failed to load complaints");
+        } finally {
+            setLoadingComplaints(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchComplaints();
+    }, [token, currentPage, searchQuery, statusFilter, categoryFilter]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, statusFilter, categoryFilter]);
+
+    const getStatusStyle = (status) => {
+        switch(status?.toLowerCase()) {
+            case 'resolved':
+            case 'closed':
+                return 'bg-green-100 text-green-700';
+            case 'assigned':
+            case 'in-progress':
+            case 'escalated':
+                return 'bg-yellow-100 text-yellow-700';
+            default:
+                return 'bg-blue-100 text-blue-700';
+        }
+    };
+
+    const openNoteModal = (complaint) => {
+        setSelectedComplaint(complaint);
+        setIsNoteModalOpen(true);
+    };
+
+    const handleNoteSubmit = async (e) => {
+        e.preventDefault();
+        if (!noteMessage.trim()) return;
+
+        setSubmittingNote(true);
+        try {
+            await addNoteToComplaint(selectedComplaint._id, { message: noteMessage }, token);
+            toast.success("Note added successfully!");
+            setNoteMessage("");
+            
+            await fetchComplaints();
+            
+            setSelectedComplaint(prev => ({
+                ...prev,
+                notes: [...(prev.notes || []), {
+                    message: noteMessage,
+                    addedBy: user?.Role || 'admin',
+                    createdAt: new Date().toISOString()
+                }]
+            }));
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to add note");
+        } finally {
+            setSubmittingNote(false);
+        }
+    };
 
     if (loading) {
         return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div></div>;
@@ -47,7 +145,7 @@ const AdminDashboard = () => {
                 <p className="text-gray-500">System wide complaint statistics</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                 <StatCard 
                     title="Total Complaints" 
                     value={stats?.totalComplaints} 
@@ -73,6 +171,270 @@ const AdminDashboard = () => {
                     color="bg-green-50"
                 />
             </div>
+
+            {/* Complaints Section */}
+            <section>
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
+                    <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                        <Grid size={20} className="text-gray-400" />
+                        All Complaints
+                    </h2>
+                    
+                    {/* Search & Filters */}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search size={16} className="text-gray-400" />
+                            </div>
+                            <input 
+                                type="text" 
+                                placeholder="Search asset or desc..." 
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-9 pr-4 py-2 w-full sm:w-64 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
+                            />
+                        </div>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Filter size={16} className="text-gray-400" />
+                            </div>
+                            <select 
+                                value={categoryFilter}
+                                onChange={(e) => setCategoryFilter(e.target.value)}
+                                className="pl-9 pr-8 py-2 w-full sm:w-auto border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
+                            >
+                                <option value="all">All Categories</option>
+                                <option value="hardware">Hardware</option>
+                                <option value="software">Software</option>
+                            </select>
+                        </div>
+                        <select 
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="px-4 py-2 w-full sm:w-auto border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
+                        >
+                            <option value="all">All Status</option>
+                            <option value="assigned">Assigned</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="escalated">Escalated</option>
+
+                        </select>
+                    </div>
+                </div>
+
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                    {loadingComplaints ? (
+                        <div className="p-12 flex justify-center items-center">
+                            <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin"></div>
+                        </div>
+                    ) : complaints.length === 0 ? (
+                        <div className="p-12 flex flex-col items-center justify-center text-center">
+                            <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
+                                <List size={28} className="text-gray-400" />
+                            </div>
+                            <h3 className="text-[16px] font-medium text-gray-900 mb-1">No complaints found</h3>
+                            <p className="text-[15px] text-gray-500 max-w-sm mb-6">
+                                Try adjusting your search or filters.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-gray-50 border-b border-gray-200 text-[13px] font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="p-4 pl-6">ID / Asset</th>
+                                        <th className="p-4">User</th>
+                                        <th className="p-4">Category</th>
+                                        <th className="p-4 hidden sm:table-cell">Description</th>
+                                        {/* <th className="p-4">Date</th> */}
+                                        <th className="p-4 text-center">Status</th>
+                                        
+                                        {/* ==========================================================Added the priority column */}
+                                        <th className="p-4 text-center">Priority</th>
+                                        <th className="p-4 text-center">Assigned To</th>
+
+
+
+                                        <th className="p-4 pr-6 text-right">Actions</th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {complaints.map((complaint) => (
+                                        <tr 
+                                            key={complaint._id} 
+                                            className="hover:bg-gray-50 transition-colors"
+                                        >
+                                            <td className="p-4 pl-6">
+                                                <span className="font-medium text-gray-900">#{complaint.assetId}</span>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-medium text-gray-900">{complaint.userId?.Name || 'Unknown'}</span>
+                                                    <span className="text-xs text-gray-500">{complaint.userId?.Email}</span>
+                                                </div>
+                                            </td>
+                                            <td className="p-4">
+                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                                                    {complaint.category}
+                                                </span>
+                                            </td>
+                                            <td className="p-4 text-gray-600 text-sm max-w-xs truncate hidden sm:table-cell">
+                                                {complaint.description}
+                                            </td>
+                                            {/* <td className="p-4 text-gray-500 text-sm whitespace-nowrap">
+                                                {new Date(complaint.createdAt).toLocaleDateString(undefined, {
+                                                    month: 'short', day: 'numeric', year: 'numeric'
+                                                })}
+                                            </td> */}
+                                            <td className="p-4 text-center whitespace-nowrap">
+                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyle(complaint.status)}`}>
+                                                    {complaint.status || 'Pending'}
+                                                </span>
+                                            </td>
+
+                                            <td className="p-4 text-center whitespace-nowrap">
+                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                                                    {complaint.priority || 'Medium'}
+                                                </span>
+                                            </td>
+
+                                            <td className="p-4 text-center whitespace-nowrap">
+                                                {complaint.assignedTo ? (
+                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
+                                                        {complaint.assignedTo.Email}
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                                                        Not Assigned
+                                                    </span>
+                                                )}
+                                            </td>
+
+
+                                            <td className="p-4 pr-6 text-right">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        openNoteModal(complaint);
+                                                    }}
+                                                    className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg"
+                                                >
+                                                    <MessageSquare size={16} />
+                                                    <span className="hidden sm:inline">Notes</span>
+                                                    {complaint.notes?.length > 0 && (
+                                                        <span className="bg-blue-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center ml-1">
+                                                            {complaint.notes.length}
+                                                        </span>
+                                                    )}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            
+                            {/* Pagination Controls */}
+                            {totalPages > 1 && (
+                                <div className="p-4 border-t border-gray-200 flex items-center justify-between">
+                                    <button 
+                                        disabled={currentPage === 1}
+                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                        className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                                    >
+                                        Previous
+                                    </button>
+                                    <span className="text-sm text-gray-500">
+                                        Page {currentPage} of {totalPages}
+                                    </span>
+                                    <button 
+                                        disabled={currentPage === totalPages}
+                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                        className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            {/* Note Popup Modal */}
+            {isNoteModalOpen && selectedComplaint && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]">
+                        <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                    Complaint #{selectedComplaint.assetId}
+                                </h3>
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                    Current Status: <span className="capitalize font-medium text-gray-700">{selectedComplaint.status}</span>
+                                </p>
+                            </div>
+                            <button 
+                                onClick={() => setIsNoteModalOpen(false)} 
+                                className="text-gray-400 hover:text-gray-900 bg-white p-1.5 rounded-full shadow-sm"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="p-5 flex-1 overflow-y-auto bg-white flex flex-col gap-4">
+                            {(!selectedComplaint.notes || selectedComplaint.notes.length === 0) ? (
+                                <div className="text-center py-8">
+                                    <MessageSquare size={32} className="mx-auto text-gray-200 mb-3" />
+                                    <p className="text-gray-500 text-sm">No notes have been added to this complaint yet.</p>
+                                </div>
+                            ) : (
+                                selectedComplaint.notes.map((note, idx) => {
+                                    const isSelf = note.addedBy === user?.Role || note.addedBy === 'admin';
+                                    return (
+                                        <div key={idx} className={`flex flex-col max-w-[85%] ${isSelf ? 'self-end items-end' : 'self-start items-start'}`}>
+                                            <div className="flex items-center gap-2 mb-1 px-1">
+                                                <span className="text-xs font-semibold capitalize text-gray-600">{note.addedBy}</span>
+                                                <span className="text-[10px] text-gray-400">
+                                                    {new Date(note.createdAt).toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' })}
+                                                </span>
+                                            </div>
+                                            <div className={`p-3 rounded-2xl text-sm ${isSelf ? 'bg-[#111827] text-white rounded-br-sm' : 'bg-gray-100 text-gray-800 rounded-bl-sm'}`}>
+                                                {note.message}
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            )}
+                        </div>
+
+                        <div className="p-4 border-t border-gray-100 bg-gray-50">
+                            <form onSubmit={handleNoteSubmit} className="flex gap-3 relative">
+                                <input 
+                                    type="text" 
+                                    value={noteMessage}
+                                    onChange={(e) => setNoteMessage(e.target.value)}
+                                    placeholder="Type a note or reply..."
+                                    className="flex-1 py-3 pl-4 pr-12 border border-gray-300 rounded-full text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all shadow-sm"
+                                />
+                                <button 
+                                    type="submit" 
+                                    disabled={submittingNote || !noteMessage.trim()}
+                                    className="absolute right-2 top-2 bottom-2 bg-[#111827] text-white p-2 rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                                >
+                                    {submittingNote ? (
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    ) : (
+                                        <Send size={16} />
+                                    )}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

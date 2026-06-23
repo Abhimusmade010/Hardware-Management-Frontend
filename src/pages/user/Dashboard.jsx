@@ -59,6 +59,7 @@ const Dashboard = () => {
                 search: searchQuery,
                 status: statusFilter,
                 category: categoryFilter
+                
             };
             const res = await getMyComplaints(token, params);
             const data = res.data?.data?.complaints || res.data?.complaints || [];
@@ -250,8 +251,13 @@ const Dashboard = () => {
                                             <th className="p-4 pl-6">ID / Asset</th>
                                             <th className="p-4">Category</th>
                                             <th className="p-4 hidden sm:table-cell">Description</th>
-                                            <th className="p-4">Date</th>
+                                            {/* <th className="p-4">Date</th> */}
                                             <th className="p-4 text-center">Status</th>
+
+                                            {/* =====================added new  =======================*/}
+                                            <th className="p-4 text-center">Priority</th>
+                                            <th className="p-4 text-center">AssignedTo</th>
+                                            
                                             <th className="p-4 pr-6 text-right">Actions</th>
                                         </tr>
                                     </thead>
@@ -273,16 +279,36 @@ const Dashboard = () => {
                                                 <td className="p-4 text-gray-600 text-sm max-w-xs truncate hidden sm:table-cell">
                                                     {complaint.description}
                                                 </td>
-                                                <td className="p-4 text-gray-500 text-sm whitespace-nowrap">
+                                                {/* <td className="p-4 text-gray-500 text-sm whitespace-nowrap">
                                                     {new Date(complaint.createdAt).toLocaleDateString(undefined, {
                                                         month: 'short', day: 'numeric', year: 'numeric'
                                                     })}
-                                                </td>
+                                                </td> */}
                                                 <td className="p-4 text-center whitespace-nowrap">
                                                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyle(complaint.status)}`}>
                                                         {complaint.status || 'Pending'}
                                                     </span>
                                                 </td>
+
+
+                                                <td className="p-4 text-center whitespace-nowrap">
+                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                                                        {complaint.priority}
+                                                    </span>
+                                                </td>
+
+                                                <td className="p-4 text-center whitespace-nowrap">
+                                                    {complaint.assignedTo ? (
+                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
+                                                            {complaint.assignedTo.Email}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                                                            Not Assigned
+                                                        </span>
+                                                    )}
+                                                </td>
+
                                                 <td className="p-4 pr-6 text-right">
                                                     <button 
                                                         onClick={(e) => {
