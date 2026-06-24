@@ -62,3 +62,4 @@ export const updateComplaintStatus = async (id, statusData, token) => {
         }
     });
 };
+

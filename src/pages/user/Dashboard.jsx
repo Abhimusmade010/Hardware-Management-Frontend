@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getMyComplaints, addNoteToComplaint, getMyStats } from '../../api/complaint';
 import { Link, useNavigate } from 'react-router-dom';
-import { Grid, Clock, CheckCircle, List, ArrowRight, Search, Filter, MessageSquare, X, Send } from 'react-feather';
+import { Grid, Clock, CheckCircle, List, ArrowRight, Search, Filter, MessageSquare, X, Send, Download } from 'react-feather';
 import Navbar from '../../components/Layouts/Navbar';
+import { downloadExcelSheet } from '../../api/admin';
 import toast, { Toaster } from 'react-hot-toast';
 
 const Dashboard = () => {
@@ -135,6 +136,30 @@ const Dashboard = () => {
         }
     };
 
+    const handleDownloadExcel = async () => {
+        try {
+            const params = {
+                search: searchQuery,
+                status: statusFilter !== 'all' ? statusFilter : undefined,
+                category: categoryFilter !== 'all' ? categoryFilter : undefined
+            };
+            const response = await downloadExcelSheet(token, params);
+            
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'Complaints.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            toast.success("Excel sheet downloaded successfully!");
+        } catch (error) {
+            console.error("Download failed:", error);
+            toast.error("Failed to download excel sheet");
+        }
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-[#f9fafb] font-sans text-gray-900">
             <Toaster position="top-center" />
@@ -223,9 +248,16 @@ const Dashboard = () => {
                                 <option value="resolved">Resolved</option>
                                 <option value="escalated">Escalated</option>
                             </select>
+                            <button
+                                onClick={handleDownloadExcel}
+                                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm whitespace-nowrap"
+                            >
+                                <Download size={16} />
+                                Export
+                            </button>
                         </div>
                     </div>
-
+                    
                     <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                         {loading ? (
                             <div className="p-12 flex justify-center items-center">
@@ -256,7 +288,9 @@ const Dashboard = () => {
 
                                             {/* =====================added new  =======================*/}
                                             <th className="p-4 text-center">Priority</th>
-                                            <th className="p-4 text-center">AssignedTo</th>
+                                            {user?.Role !== 'maintainance' && (
+                                                <th className="p-4 text-center">AssignedTo</th>
+                                            )}
                                             
                                             <th className="p-4 pr-6 text-right">Actions</th>
                                         </tr>
@@ -297,17 +331,19 @@ const Dashboard = () => {
                                                     </span>
                                                 </td>
 
-                                                <td className="p-4 text-center whitespace-nowrap">
-                                                    {complaint.assignedTo ? (
-                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
-                                                            {complaint.assignedTo.Email}
-                                                        </span>
-                                                    ) : (
-                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                                                            Not Assigned
-                                                        </span>
-                                                    )}
-                                                </td>
+                                                {user?.Role !== 'maintainance' && (
+                                                    <td className="p-4 text-center whitespace-nowrap">
+                                                        {complaint.assignedTo ? (
+                                                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
+                                                                {complaint.assignedTo.Email}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                                                                Not Assigned
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                )}
 
                                                 <td className="p-4 pr-6 text-right">
                                                     <button 

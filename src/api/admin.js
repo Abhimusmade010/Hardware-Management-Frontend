@@ -27,3 +27,12 @@ export const createMaintenanceUser = (data, token) => {
 export const getMaintenanceEngineers = (token) => {
     return axios.get(`${API_URL}/admin/engineers`, getAuthHeaders(token));
 };
+
+export const downloadExcelSheet = (token, params = {}) => {
+    return axios.get(`${API_URL}/dashboard/downloadSheet`, {
+        ...getAuthHeaders(token),
+        params,
+        responseType: 'blob'
+    });
+};
+

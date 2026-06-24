@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { getDashboardStats, getMaintenanceEngineers } from '../../api/admin';
+import { getDashboardStats, getMaintenanceEngineers, downloadExcelSheet } from '../../api/admin';
 import { getMyComplaints, addNoteToComplaint } from '../../api/complaint';
-import { Activity, AlertTriangle, CheckCircle, Clock, Grid, List, Search, Filter, MessageSquare, X, Send, Users } from 'react-feather';
+import { Activity, AlertTriangle, CheckCircle, Clock, Grid, List, Search, Filter, MessageSquare, X, Send, Users, Download } from 'react-feather';
 import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
@@ -16,6 +16,8 @@ const AdminDashboard = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const limit = 10;
+
+    const [activeTab, setActiveTab] = useState("all");
 
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
@@ -97,6 +99,16 @@ const AdminDashboard = () => {
     }, [token, currentPage, searchQuery, statusFilter, categoryFilter]);
 
     useEffect(() => {
+        if (activeTab === "escalated") {
+            setStatusFilter("escalated");
+            setCurrentPage(1);
+        } else {
+            setStatusFilter("all");
+            setCurrentPage(1);
+        }
+    }, [activeTab]);
+
+    useEffect(() => {
         setCurrentPage(1);
     }, [searchQuery, statusFilter, categoryFilter]);
 
@@ -145,6 +157,30 @@ const AdminDashboard = () => {
         }
         finally {
             setSubmittingNote(false);
+        }
+    };
+
+    const handleDownloadExcel = async () => {
+        try {
+            const params = {
+                search: searchQuery,
+                status: statusFilter !== 'all' ? statusFilter : undefined,
+                category: categoryFilter !== 'all' ? categoryFilter : undefined
+            };
+            const response = await downloadExcelSheet(token, params);
+            
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'Admin_Complaints.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            toast.success("Excel sheet downloaded successfully!");
+        } catch (error) {
+            console.error("Download failed:", error);
+            toast.error("Failed to download excel sheet");
         }
     };
 
@@ -261,10 +297,28 @@ const AdminDashboard = () => {
 
             {/* Complaints Section */}
             <section>
+                <div className="flex border-b border-gray-200 mb-6">
+                    <button
+                        onClick={() => setActiveTab("all")}
+                        className={`py-3 px-6 text-sm font-medium border-b-2 transition-colors ${activeTab === 'all' ? 'border-[#111827] text-[#111827]' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    >
+                        All Complaints
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("escalated")}
+                        className={`py-3 px-6 text-sm font-medium border-b-2 transition-colors ${activeTab === 'escalated' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    >
+                        Escalated Complaints
+                    </button>
+                </div>
+
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
                     <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                        <Grid size={20} className="text-gray-400" />
-                        All Complaints
+                        {activeTab === 'escalated' ? (
+                            <><AlertTriangle size={20} className="text-red-500" /> Escalated Complaints</>
+                        ) : (
+                            <><Grid size={20} className="text-gray-400" /> All Complaints</>
+                        )}
                     </h2>
 
                     {/* Search & Filters */}
@@ -295,17 +349,26 @@ const AdminDashboard = () => {
                                 <option value="software">Software</option>
                             </select>
                         </div>
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="px-4 py-2 w-full sm:w-auto border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
+                        {activeTab === 'all' && (
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="px-4 py-2 w-full sm:w-auto border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none appearance-none bg-white cursor-pointer"
+                            >
+                                <option value="all">All Status</option>
+                                <option value="assigned">Assigned</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                                <option value="escalated">Escalated</option>
+                            </select>
+                        )}
+                        <button
+                            onClick={handleDownloadExcel}
+                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm whitespace-nowrap"
                         >
-                            <option value="all">All Status</option>
-                            <option value="assigned">Assigned</option>
-                            <option value="in-progress">In Progress</option>
-                            <option value="resolved">Resolved</option>
-                            <option value="escalated">Escalated</option>
-                        </select>
+                            <Download size={16} />
+                            Export
+                        </button>
                     </div>
                 </div>
 

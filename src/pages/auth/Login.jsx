@@ -62,7 +62,9 @@ const Login = () => {
             
             setTimeout(() => {
                 const role = user?.Role || 'user';
-                if (role === 'admin') {
+                if (user?.mustChangePassword) {
+                    navigate('/user/change-password');
+                } else if (role === 'admin') {
                     navigate('/admin/dashboard');
                 } else {
                     navigate(ROUTES?.USER?.HOME || '/user/home');
