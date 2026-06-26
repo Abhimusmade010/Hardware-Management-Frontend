@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getMyComplaints, addNoteToComplaint, getMyStats } from '../../api/complaint';
 import { Link, useNavigate } from 'react-router-dom';
-import { Grid, Clock, CheckCircle, List, ArrowRight, Search, Filter, MessageSquare, X, Send, Download } from 'react-feather';
+import { Grid, Clock, CheckCircle, List, ArrowRight, Search, Filter, MessageSquare, X, Send, Download, Eye } from 'react-feather';
 import Navbar from '../../components/Layouts/Navbar';
 import { downloadExcelSheet } from '../../api/admin';
 import toast, { Toaster } from 'react-hot-toast';
@@ -319,9 +319,16 @@ const Dashboard = () => {
                                                     })}
                                                 </td> */}
                                                 <td className="p-4 text-center whitespace-nowrap">
-                                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyle(complaint.status)}`}>
-                                                        {complaint.status || 'Pending'}
-                                                    </span>
+                                                    <div className="flex flex-col items-center justify-center gap-1.5">
+                                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyle(complaint.status)}`}>
+                                                            {complaint.status || 'Pending'}
+                                                        </span>
+                                                        {complaint.seenByManager && user?.Role !== 'maintainance' && (
+                                                            <span className="flex items-center gap-1 text-[10px] text-purple-600 font-medium bg-purple-50 px-1.5 py-0.5 rounded-full border border-purple-100">
+                                                                <Eye size={10} /> Seen
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </td>
 
 

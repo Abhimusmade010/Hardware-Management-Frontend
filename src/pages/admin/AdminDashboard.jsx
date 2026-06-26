@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getDashboardStats, getMaintenanceEngineers, downloadExcelSheet } from '../../api/admin';
 import { getMyComplaints, addNoteToComplaint } from '../../api/complaint';
-import { Activity, AlertTriangle, CheckCircle, Clock, Grid, List, Search, Filter, MessageSquare, X, Send, Users, Download } from 'react-feather';
+import { Activity, AlertTriangle, CheckCircle, Clock, Grid, List, Search, Filter, MessageSquare, X, Send, Users, Download, Eye } from 'react-feather';
 import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
@@ -430,9 +430,16 @@ const AdminDashboard = () => {
                                                 })}
                                             </td>
                                             <td className="p-4 text-center whitespace-nowrap">
-                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyle(complaint.status)}`}>
-                                                    {complaint.status || 'Pending'}
-                                                </span>
+                                                <div className="flex flex-col items-center justify-center gap-1.5">
+                                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyle(complaint.status)}`}>
+                                                        {complaint.status || 'Pending'}
+                                                    </span>
+                                                    {complaint.seenByManager && (
+                                                        <span className="flex items-center gap-1 text-[10px] text-purple-600 font-medium bg-purple-50 px-1.5 py-0.5 rounded-full border border-purple-100">
+                                                            <Eye size={10} /> Seen
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="p-4 pr-6 text-right">
                                                 <button

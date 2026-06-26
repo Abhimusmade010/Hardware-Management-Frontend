@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { getComplaintDetails, addNoteToComplaint, updateComplaintStatus } from '../../api/complaint';
 import Navbar from '../../components/Layouts/Navbar';
 import toast, { Toaster } from 'react-hot-toast';
-import { ArrowLeft, Monitor, AlignLeft, Clock, AlertTriangle, CheckCircle, User, Info, FileText, MessageSquare, Send, Image as ImageIcon } from 'react-feather';
+import { ArrowLeft, Monitor, AlignLeft, Clock, AlertTriangle, CheckCircle, User, Info, FileText, MessageSquare, Send, Image as ImageIcon, Eye } from 'react-feather';
 
 const ComplaintDetails = () => {
     const { id } = useParams();
@@ -139,11 +139,17 @@ const ComplaintDetails = () => {
                         >
                             <ArrowLeft size={16} /> Back to Dashboard
                         </button>
-                        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3 flex-wrap">
                             Ticket #{complaint.assetId}
                             <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${getStatusStyle(complaint.status)}`}>
                                 {complaint.status}
                             </span>
+                            {complaint.seenByManager && user?.Role !== 'maintainance' && (
+                                <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 flex items-center gap-1.5 border border-purple-200 shadow-sm">
+                                    <Eye size={14} />
+                                    Seen by Manager
+                                </span>
+                            )}
                         </h1>
                         <p className="text-sm text-gray-500 mt-1">
                             Logged on {new Date(complaint.createdAt).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })}
