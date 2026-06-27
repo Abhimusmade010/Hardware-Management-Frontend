@@ -20,8 +20,8 @@ const RaiseComplaint = () => {
         priority: 'Medium',
         description: ''
     });
-    const [imageFile, setImageFile] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
+    const [mediaFile, setMediaFile] = useState(null);
+    const [mediaPreview, setMediaPreview] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,18 +29,30 @@ const RaiseComplaint = () => {
         if (error) setError('');
     };
 
-    const handleImageChange = (e) => {
+    const handleMediaChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
+            setMediaFile(file);
+            setMediaPreview(URL.createObjectURL(file));
         }
     };
 
-    const removeImage = () => {
-        setImageFile(null);
-        setImagePreview(null);
+    const removeMedia = () => {
+        setMediaFile(null);
+        setMediaPreview(null);
     };
+
+    // const validateForm = () => {
+    //     if (!formData.assetId || !formData.description) {
+    //         setError('Asset ID and Description are required.');
+    //         return false;
+    //     }
+    //     if (isNaN(Number(formData.assetId))) {
+    //         setError('Asset ID must be a number.');
+    //         setMediaPreview(null);
+    //     }   
+    // };
+
 
     const validateForm = () => {
         if (!formData.assetId || !formData.description) {
@@ -67,13 +79,13 @@ const RaiseComplaint = () => {
 
         try {
             let payload;
-            if (imageFile) {
+            if (mediaFile) {
                 payload = new FormData();
                 payload.append('assetId', Number(formData.assetId));
                 payload.append('category', formData.category);
                 payload.append('priority', formData.priority);
                 payload.append('description', formData.description);
-                payload.append('image', imageFile);
+                payload.append('media', mediaFile);
             } else {
                 // Convert assetId to number as per backend schema
                 payload = {
@@ -192,38 +204,56 @@ const RaiseComplaint = () => {
                             </div>
                         </div>
 
-                        {/* Row 4: Image Upload */}
+                        {/* Row 4: Media Upload */}
                         <div>
-                            <label className="block text-[14px] font-medium text-gray-700 mb-1.5">Attach Image (Optional)</label>
-                            {!imagePreview ? (
-                                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md bg-[#edf2f7] hover:bg-gray-50 transition-colors relative cursor-pointer">
+                            <label className="block text-[14px] font-medium text-gray-700 mb-1.5">Attach Media (Image/Video)</label>
+                            
+                            {!mediaFile ? (
+                                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md bg-[#edf2f7] hover:bg-gray-200 transition-colors">
                                     <div className="space-y-1 text-center">
-                                        <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-                                        <div className="flex text-sm text-gray-600 justify-center">
-                                            <label htmlFor="file-upload" className="relative cursor-pointer bg-transparent rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                        <ImageIcon className="mx-auto h-10 w-10 text-gray-400" />
+                                        <div className="flex text-sm text-gray-600 justify-center mt-2">
+                                            <label className="relative cursor-pointer rounded-md font-medium text-[#111827] hover:text-gray-700 focus-within:outline-none">
                                                 <span>Upload a file</span>
-                                                <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/*" onChange={handleImageChange} />
+                                                <input name="media" type="file" className="sr-only" onChange={handleMediaChange} accept="image/*,video/*" />
                                             </label>
                                         </div>
-                                        <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                                        <p className="text-xs text-gray-500 mt-1">PNG, JPG, MP4</p>
                                     </div>
-                                    <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*" onChange={handleImageChange} title="" />
                                 </div>
                             ) : (
                                 <div className="mt-1 relative rounded-md overflow-hidden bg-gray-100 border border-gray-200 inline-block">
-                                    <img src={imagePreview} alt="Preview" className="max-h-48 object-contain" />
-                                    <button 
+                                    {mediaFile.type.startsWith("image/") ? (
+                                        <img
+                                            src={mediaPreview}
+                                            alt="Preview"
+                                            className="max-h-48 object-contain"
+                                        />
+                                    ) : (
+                                        <video
+                                            controls
+                                            className="max-h-48 object-contain"
+                                        >
+                                            <source
+                                                src={mediaPreview}
+                                                type={mediaFile.type}
+                                            />
+                                            Your browser does not support video.
+                                        </video>
+                                    )}
+                                    <button
                                         type="button"
-                                        onClick={removeImage}
+                                        onClick={removeMedia}
                                         className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full transition-colors"
-                                        title="Remove Image"
                                     >
-                                        <X size={16} />
+                                        <X size={16}/>
                                     </button>
                                 </div>
                             )}
                         </div>
 
+
+                        
                         {/* Action Buttons */}
                         <div className="pt-2 flex items-center justify-end gap-3 border-t border-gray-100 mt-2">
                             <button
@@ -305,7 +335,7 @@ const RaiseComplaint = () => {
                                 onClick={() => { 
                                     setSubmittedComplaint(null); 
                                     setFormData({assetId: '', category: 'Hardware', priority: 'Medium', description: ''}); 
-                                    removeImage();
+                                    removeMedia();
                                 }} 
                                 className="w-full bg-white border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium text-[15px] hover:bg-gray-50 transition-colors"
                             >

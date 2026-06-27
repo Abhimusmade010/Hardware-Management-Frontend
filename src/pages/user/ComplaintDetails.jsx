@@ -206,20 +206,35 @@ const ComplaintDetails = () => {
                                     </p>
                                 </div>
 
-                                {complaint.attachments && complaint.attachments.length > 0 && (
+                                {(complaint.attachment || (complaint.attachments && complaint.attachments.length > 0)) && (
                                     <div className="mt-8 pt-6 border-t border-gray-100">
                                         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                            <ImageIcon size={14} /> Attached Image
+                                            <ImageIcon size={14} /> Attached Media
                                         </p>
                                         <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50 inline-block">
-                                            <img 
-                                                src={complaint.attachments[0]} 
-                                                alt="Complaint Attachment" 
-                                                className="max-h-96 object-contain"
-                                            />
+                                            {(() => {
+                                                const mediaUrl = complaint.attachment || complaint.attachments[0];
+                                                const isVideo = mediaUrl.match(/\.(mp4|webm|ogg|mov)$/i);
+                                                return isVideo ? (
+                                                    <video 
+                                                        controls 
+                                                        className="max-h-96 object-contain"
+                                                    >
+                                                        <source src={mediaUrl} />
+                                                        Your browser does not support video.
+                                                    </video>
+                                                ) : (
+                                                    <img 
+                                                        src={mediaUrl} 
+                                                        alt="Complaint Attachment" 
+                                                        className="max-h-96 object-contain"
+                                                    />
+                                                );
+                                            })()}
                                         </div>
                                     </div>
                                 )}
+                                
                             </div>
                         </div>
 
