@@ -213,8 +213,22 @@ const ComplaintDetails = () => {
                                         </p>
                                         <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50 inline-block">
                                             {(() => {
-                                                const mediaUrl = complaint.attachment || complaint.attachments[0];
-                                                const isVideo = mediaUrl.match(/\.(mp4|webm|ogg|mov)$/i);
+                                                const attachment = complaint.attachment || (complaint.attachments && complaint.attachments[0]);
+                                                if (!attachment) return null;
+
+                                                let mediaUrl = '';
+                                                let isVideo = false;
+
+                                                if (typeof attachment === 'object' && attachment.url) {
+                                                    mediaUrl = attachment.url;
+                                                    isVideo = attachment.type === 'video' || mediaUrl.match(/\.(mp4|webm|ogg|mov)(\?.*)?$/i);
+                                                } else if (typeof attachment === 'string') {
+                                                    mediaUrl = attachment;
+                                                    isVideo = mediaUrl.match(/\.(mp4|webm|ogg|mov)(\?.*)?$/i);
+                                                } else {
+                                                    return null; // Invalid attachment format
+                                                }
+
                                                 return isVideo ? (
                                                     <video 
                                                         controls 
