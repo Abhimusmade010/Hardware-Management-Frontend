@@ -63,3 +63,18 @@ export const updateComplaintStatus = async (id, statusData, token) => {
     });
 };
 
+export const submitReview = async (id, reviewData, token) => {
+    return await axios.post(`${API_URL}/${id}/reviews`, reviewData, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+};
+
+export const getReview = async (id, token) => {
+    return await axios.get(`${API_URL}/${id}/reviews`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+};

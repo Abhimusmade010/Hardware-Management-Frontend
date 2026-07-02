@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { getComplaintDetails, addNoteToComplaint, updateComplaintStatus } from '../../api/complaint';
+import { getComplaintDetails, addNoteToComplaint, updateComplaintStatus, submitReview, getReview } from '../../api/complaint';
 import Navbar from '../../components/Layouts/Navbar';
 import toast, { Toaster } from 'react-hot-toast';
 import { ArrowLeft, Monitor, AlignLeft, Clock, AlertTriangle, CheckCircle, User, Info, FileText, MessageSquare, Send, Image as ImageIcon, Eye } from 'react-feather';
@@ -22,12 +22,25 @@ const ComplaintDetails = () => {
     const [updatingStatus, setUpdatingStatus] = useState(false);
     const [statusError, setStatusError] = useState(false);
 
+    const [reviewData, setReviewData] = useState(null);
+    const [rating, setRating] = useState(5);
+    const [feedback, setFeedback] = useState("");
+    const [submittingReview, setSubmittingReview] = useState(false);
+
     useEffect(() => {
         const fetchDetails = async () => {
             if (!token) return;
             try {
                 const res = await getComplaintDetails(id, token);
-                setComplaint(res.data?.data?.complaint || res.data?.complaint);
+                const fetchedComplaint = res.data?.data?.complaint || res.data?.complaint;
+                setComplaint(fetchedComplaint);
+                
+                if (fetchedComplaint && (fetchedComplaint.status === 'resolved' || fetchedComplaint.status === 'closed')) {
+                    const reviewRes = await getReview(id, token).catch(() => null);
+                    if (reviewRes && reviewRes.data?.data?.review) {
+                        setReviewData(reviewRes.data.data.review);
+                    }
+                }
             } catch (err) {
                 console.error("Failed to fetch complaint details", err);
                 toast.error("Failed to load complaint details");
@@ -36,7 +49,7 @@ const ComplaintDetails = () => {
             }
         };
         fetchDetails();
-    }, [id, token]);
+    }, [id, token, user?.Role]);
 
     const getStatusStyle = (status) => {
         switch(status?.toLowerCase()) {
@@ -95,6 +108,22 @@ const ComplaintDetails = () => {
             toast.error(err.response?.data?.message || "Failed to update status");
         } finally {
             setUpdatingStatus(false);
+        }
+    };
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        if (!feedback.trim()) return;
+
+        setSubmittingReview(true);
+        try {
+            const res = await submitReview(id, { ratings: rating, feedback }, token);
+            toast.success("Review submitted successfully!");
+            setReviewData(res.data?.data?.review);
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to submit review");
+        } finally {
+            setSubmittingReview(false);
         }
     };
 
@@ -267,6 +296,70 @@ const ComplaintDetails = () => {
                                         <p className="text-xs text-green-600 mt-3 font-medium">
                                             Resolved on: {new Date(complaint.resolutionDate).toLocaleString()}
                                         </p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Review/Feedback Section (User Only, when resolved/closed) */}
+                        {user?.Role === 'user' && (complaint.status === 'resolved' || complaint.status === 'closed') && (
+                            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                                <div className="p-5 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+                                    <span className="text-xl leading-none">⭐</span>
+                                    <h3 className="text-base font-semibold text-gray-900">Feedback & Review</h3>
+                                </div>
+                                <div className="p-6">
+                                    {reviewData ? (
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <span className="text-lg font-bold text-gray-900">{reviewData.ratings} / 5</span>
+                                                <div className="flex text-yellow-400">
+                                                    {[1, 2, 3, 4, 5].map(star => (
+                                                        <span key={star} className={star <= reviewData.ratings ? 'text-yellow-400' : 'text-gray-200'}>★</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <p className="text-gray-700 text-sm whitespace-pre-wrap bg-gray-50 p-4 rounded-xl border border-gray-100">{reviewData.feedback}</p>
+                                        </div>
+                                    ) : (
+                                        <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1.5">Rating (1-5)</label>
+                                                <div className="flex items-center gap-1 text-2xl">
+                                                    {[1, 2, 3, 4, 5].map(star => (
+                                                        <button
+                                                            type="button"
+                                                            key={star}
+                                                            onClick={() => setRating(star)}
+                                                            className={`focus:outline-none transition-colors ${star <= rating ? 'text-yellow-400' : 'text-gray-200 hover:text-yellow-200'}`}
+                                                        >
+                                                            ★
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1.5">Feedback</label>
+                                                <textarea
+                                                    value={feedback}
+                                                    onChange={(e) => setFeedback(e.target.value)}
+                                                    placeholder="Share your experience..."
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all resize-none min-h-[80px]"
+                                                    required
+                                                />
+                                            </div>
+                                            <button 
+                                                type="submit" 
+                                                disabled={submittingReview}
+                                                className="self-start bg-[#111827] text-white px-6 py-2.5 rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                            >
+                                                {submittingReview ? (
+                                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                ) : (
+                                                    <span>Submit Feedback</span>
+                                                )}
+                                            </button>
+                                        </form>
                                     )}
                                 </div>
                             </div>
