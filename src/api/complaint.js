@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Pointing to your server endpoint
-const API_URL = 'http://localhost:3001/api/complaints';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_URL = `${BASE_URL}/complaints`;
 
 // raise complaint route
 export const raiseComplaint = async (complaintData, token) => {
