@@ -78,11 +78,3 @@ This will generate the built assets in the `dist/` directory. You can preview th
 ```bash
 npm run preview
 ```
-
-## 📝 Code Style & Linting
-
-This project uses ESLint to maintain code quality. To run the linter:
-
-```bash
-npm run lint
-```
