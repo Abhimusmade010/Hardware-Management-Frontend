@@ -99,7 +99,7 @@ const Login = () => {
 
                 <div className="w-full max-w-[420px] bg-white rounded-xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 p-6 sm:p-8">
                     
-                    <div className="mb-5">
+                    {/* <div className="mb-5">
                         <h2 className="text-[22px] font-semibold text-center text-gray-900 mb-1.5">Welcome back</h2>
                         <p className="text-[15px] text-gray-500 text-center">Login with your Email or Google account</p>
                     </div>
@@ -112,13 +112,13 @@ const Login = () => {
                         <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                     </svg>
                     Login with Google
-                </button>
+                </button> */}
 
-                <div className="flex items-center gap-3 mb-5">
+                {/* <div className="flex items-center gap-3 mb-5">
                     <div className="flex-1 h-px bg-gray-200"></div>
                     <span className="text-sm text-gray-400">Or continue with</span>
                     <div className="flex-1 h-px bg-gray-200"></div>
-                </div>
+                </div> */}
 
                 {error && (
                     <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 text-[14px] rounded-md text-center">
@@ -183,10 +183,10 @@ const Login = () => {
                 </p>
             </div>
             
-            <div className="mt-6 text-center text-[13px] text-gray-500 max-w-sm">
-                By clicking continue, you agree to our <br/>
+            {/* <div className="mt-6 text-center text-[13px] text-gray-500 max-w-sm"> */}
+                {/* By clicking continue, you agree to our <br/>
                 <a href="#" className="underline hover:text-gray-700">Terms of Service</a> and <a href="#" className="underline hover:text-gray-700">Privacy Policy</a>.
-            </div>
+            </div> */}
             </div>
         </div>
     );
