@@ -142,9 +142,9 @@ const Login = () => {
                     <div>
                         <div className="flex justify-between items-center mb-1.5">
                             <label className="block text-[14px] font-medium text-gray-700">Password</label>
-                            <a href="#" className="text-[13px] text-gray-500 hover:text-gray-900 transition-colors">
+                            {/* <a href="#" className="text-[13px] text-gray-500 hover:text-gray-900 transition-colors">
                                 Forgot your password?
-                            </a>
+                            </a> */}
                         </div>
                         <input
                             type="password"
