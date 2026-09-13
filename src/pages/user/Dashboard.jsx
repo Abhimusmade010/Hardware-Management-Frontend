@@ -203,7 +203,7 @@ const Dashboard = () => {
                 <section>
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
                         <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                            <Grid size={20} className="text-gray-400" />
+                            {/* <Grid size={20} className="text-gray-400" /> */}
                             Your Complaints
                         </h2>
                         
@@ -223,9 +223,9 @@ const Dashboard = () => {
                             </div>
                             {user?.Role !== 'maintainance' && (
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    {/* <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <Filter size={16} className="text-gray-400" />
-                                    </div>
+                                    </div> */}
                                     <select 
                                         value={categoryFilter}
                                         onChange={(e) => setCategoryFilter(e.target.value)}
