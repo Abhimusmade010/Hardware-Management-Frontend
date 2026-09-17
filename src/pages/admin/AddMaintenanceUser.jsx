@@ -10,7 +10,7 @@ const AddMaintenanceUser = () => {
     const [formData, setFormData] = useState({
         Name: '',
         Email: '',
-        department: 'Hardware'
+        Specialization: ''
     });
 
     const handleChange = (e) => {
@@ -25,7 +25,7 @@ const AddMaintenanceUser = () => {
         try {
             await createMaintenanceUser(formData, token);
             toast.success('Maintenance Engineer added successfully!');
-            setFormData({ Name: '', Email: '', department: 'Hardware' });
+            setFormData({ Name: '', Email: '', Specialization: '' });
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to add engineer');
         } finally {
@@ -88,14 +88,16 @@ const AddMaintenanceUser = () => {
                                 <Briefcase size={18} className="text-gray-400" />
                             </div>
                             <select
-                                name="department"
-                                value={formData.department}
+                                name="Specialization"
+                                value={formData.Specialization}
                                 onChange={handleChange}
+                                required
                                 className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
                             >
+                                <option value="">Select specialization</option>
                                 <option value="Hardware">Hardware</option>
                                 <option value="Software">Software</option>
-                                <option value="Network">Network</option>
+                                {/* <option value="Network">Network</option> */}
                             </select>
                         </div>
                     </div>
