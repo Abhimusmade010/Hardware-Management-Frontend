@@ -42,7 +42,7 @@ const DashboardLayout = ({ children, title = "Dashboard" }) => {
                             </div>
                             <div className="text-left">
                                 <p className="text-[14px] font-medium leading-tight">{user?.Name || 'User Account'}</p>
-                                <p className="text-[12px] text-gray-500">{user?.Role === 'maintainance' ? 'Manager' : 'Student/Staff'}</p>
+                                <p className="text-[12px] text-gray-500">{(user?.Role?.toLowerCase() === 'maintainance' || user?.Role?.toLowerCase() === 'maintenance') ? 'Manager' : 'Student/Staff'}</p>
                             </div>
                         </div>
                         <ChevronDown size={14} className="text-gray-400" />

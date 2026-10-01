@@ -69,7 +69,8 @@ const Profile = () => {
 
     // Calculate profile completion percentage
     const baseFields = ['Name', 'Email', 'Department', 'CabinNo', 'MobileNo'];
-    const profileFields = user?.Role === 'maintainance' ? [...baseFields, 'Specialization'] : [...baseFields, 'Designation'];
+    const isMaintenanceUser = user?.Role?.toLowerCase() === 'maintainance' || user?.Role?.toLowerCase() === 'maintenance';
+    const profileFields = isMaintenanceUser ? [...baseFields, 'Specialization'] : [...baseFields, 'Designation'];
     const filledFields = profileFields.filter(field => user && user[field] && String(user[field]).trim() !== '');
     const completionPercentage = Math.round((filledFields.length / profileFields.length) * 100);
 
@@ -235,7 +236,7 @@ const Profile = () => {
                                             </div>
                                         </div>
 
-                                        {user?.Role === 'maintainance' ? (
+                                        {(user?.Role?.toLowerCase() === 'maintainance' || user?.Role?.toLowerCase() === 'maintenance') ? (
                                             <div>
                                                 <label className="block text-[13px] font-medium text-gray-700 mb-1.5">Specialization</label>
                                                 <div className="relative">
@@ -310,7 +311,7 @@ const Profile = () => {
                                                 <span>{user?.CabinNo || <span className="text-gray-400 italic">Not specified</span>}</span>
                                             </div>
                                         </div>
-                                        {user?.Role === 'maintainance' ? (
+                                        {(user?.Role?.toLowerCase() === 'maintainance' || user?.Role?.toLowerCase() === 'maintenance') ? (
                                             <div>
                                                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Specialization</p>
                                                 <div className="flex items-center gap-2 text-gray-900">

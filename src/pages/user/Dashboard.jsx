@@ -221,7 +221,7 @@ const Dashboard = () => {
                                     className="pl-9 pr-4 py-2 w-full sm:w-64 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
                                 />
                             </div>
-                            {user?.Role !== 'maintainance' && (
+                            {user?.Role?.toLowerCase() !== 'maintainance' && user?.Role?.toLowerCase() !== 'maintenance' && (
                                 <div className="relative">
                                     {/* <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <Filter size={16} className="text-gray-400" />
@@ -270,7 +270,7 @@ const Dashboard = () => {
                                 </div>
                                 <h3 className="text-[16px] font-medium text-gray-900 mb-1">No complaints found</h3>
                                 <p className="text-[15px] text-gray-500 max-w-sm mb-6">
-                                    {user?.Role === 'maintainance' 
+                                    {(user?.Role?.toLowerCase() === 'maintainance' || user?.Role?.toLowerCase() === 'maintenance') 
                                         ? "There are currently no complaints assigned to your department." 
                                         : "Try adjusting your search or filters, or raise a new ticket if you have an issue."}
                                 </p>
@@ -288,7 +288,7 @@ const Dashboard = () => {
 
                                             {/* =====================added new  =======================*/}
                                             <th className="p-4 text-center">Priority</th>
-                                            {user?.Role !== 'maintainance' && (
+                                            {user?.Role?.toLowerCase() !== 'maintainance' && user?.Role?.toLowerCase() !== 'maintenance' && (
                                                 <th className="p-4 text-center">AssignedTo</th>
                                             )}
                                             
@@ -323,7 +323,7 @@ const Dashboard = () => {
                                                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyle(complaint.status)}`}>
                                                             {complaint.status || 'Pending'}
                                                         </span>
-                                                        {complaint.seenByManager && user?.Role !== 'maintainance' && (
+                                                        {complaint.seenByManager && user?.Role?.toLowerCase() !== 'maintainance' && user?.Role?.toLowerCase() !== 'maintenance' && (
                                                             <span className="flex items-center gap-1 text-[10px] text-purple-600 font-medium bg-purple-50 px-1.5 py-0.5 rounded-full border border-purple-100">
                                                                 <Eye size={10} /> Seen
                                                             </span>
@@ -338,7 +338,7 @@ const Dashboard = () => {
                                                     </span>
                                                 </td>
 
-                                                {user?.Role !== 'maintainance' && (
+                                                {user?.Role?.toLowerCase() !== 'maintainance' && user?.Role?.toLowerCase() !== 'maintenance' && (
                                                     <td className="p-4 text-center whitespace-nowrap">
                                                         {complaint.assignedTo ? (
                                                             <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">

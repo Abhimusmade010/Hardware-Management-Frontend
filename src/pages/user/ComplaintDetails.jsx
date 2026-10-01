@@ -173,7 +173,7 @@ const ComplaintDetails = () => {
                             <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${getStatusStyle(complaint.status)}`}>
                                 {complaint.status}
                             </span>
-                            {complaint.seenByManager && user?.Role !== 'maintainance' && (
+                            {complaint.seenByManager && user?.Role?.toLowerCase() !== 'maintainance' && user?.Role?.toLowerCase() !== 'maintenance' && (
                                 <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 flex items-center gap-1.5 border border-purple-200 shadow-sm">
                                     <Eye size={14} />
                                     Seen by Manager
@@ -366,7 +366,7 @@ const ComplaintDetails = () => {
                         )}
 
                         {/* Status Update Card (Maintenance Only) */}
-                        {user?.Role === 'maintainance' && complaint.status !== 'closed' && complaint.status !== 'resolved' && (
+                        {(user?.Role?.toLowerCase() === 'maintainance' || user?.Role?.toLowerCase() === 'maintenance') && complaint.status !== 'closed' && complaint.status !== 'resolved' && (
                             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                                 <div className="p-5 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
                                     <AlertTriangle size={18} className="text-yellow-600" />

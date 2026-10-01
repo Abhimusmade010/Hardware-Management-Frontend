@@ -51,7 +51,7 @@ const Navbar = () => {
                             <Bell size={20} />
                             <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
                         </button>
-                        {user?.Role !== 'maintainance' && (
+                        {user?.Role?.toLowerCase() !== 'maintainance' && user?.Role?.toLowerCase() !== 'maintenance' && (
                             <Link 
                                 to="/user/raise" 
                                 className="hidden sm:flex items-center gap-2 bg-[#111827] text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-gray-800 transition-colors"
