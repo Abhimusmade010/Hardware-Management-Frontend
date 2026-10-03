@@ -1,36 +1,27 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-
-const getAuthHeaders = (token) => ({
-    headers: {
-        Authorization: `Bearer ${token}`
-    }
-});
+import api from './axiosInstance';
 
 export const getDashboardStats = (token) => {
-    return axios.get(`${API_URL}/dashboard/stats`, getAuthHeaders(token));
+    return api.get(`/dashboard/stats`);
 };
 
 export const getDepartmentStats = (token) => {
-    return axios.get(`${API_URL}/dashboard/department-stats`, getAuthHeaders(token));
+    return api.get(`/dashboard/department-stats`);
 };
 
 export const getCategoryStats = (token) => {
-    return axios.get(`${API_URL}/dashboard/category-stats`, getAuthHeaders(token));
+    return api.get(`/dashboard/category-stats`);
 };
 
 export const createMaintenanceUser = (data, token) => {
-    return axios.post(`${API_URL}/admin/create-maintenance`, data, getAuthHeaders(token));
+    return api.post(`/admin/create-maintenance`, data);
 };
 
 export const getMaintenanceEngineers = (token) => {
-    return axios.get(`${API_URL}/admin/engineers`, getAuthHeaders(token));
+    return api.get(`/admin/engineers`);
 };
 
 export const downloadExcelSheet = (token, params = {}) => {
-    return axios.get(`${API_URL}/dashboard/downloadSheet`, {
-        ...getAuthHeaders(token),
+    return api.get(`/dashboard/downloadSheet`, {
         params,
         responseType: 'blob'
     });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import ROUTES from './routes/routePaths';
+import ROUTES from '../routes/routePaths';
 
 // it simply redirects to the user login page 
 const LandingPage = () => {
